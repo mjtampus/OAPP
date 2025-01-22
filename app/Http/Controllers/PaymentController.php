@@ -28,7 +28,7 @@ class PaymentController extends Controller
 
     //========================================================== STRIPE ==================================================================//
 
-public function payViaStripe($order , $gateway)
+private function payViaStripe($order , $gateway)
 {
     $stripe = new StripeClient(env('STRIPE_SECRET'));
     $referenceNumber = Str::random(10);
