@@ -69,12 +69,12 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 1. clone this repository
 2. open the file open it with vs code and go to vs code terminal
-3. run <h3> composer install </h3>
+3. run <b> composer install </b>
 4. create .env file and copy the contents in env example
-5. run <h3> php artisan key:generate </h3>
-6. run <h3> php artisan migrate </h3> to migrate migrations
+5. run <b> php artisan key:generate <b>
+6. run <b> php artisan migrate </b> to migrate migrations
 
 ## How to use tinker
 
-7. run command <h3> php artisan tinker </h3> hit enter
-8. type this <h3> Order::factory()->count(30)->create() </h3> hit enter again it will create 30 orders`
+7. run command <b> php artisan tinker </b> hit enter
+8. type this <b> Order::factory()->count(30)->create() </b> hit enter again it will create 30 orders`
