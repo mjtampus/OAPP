@@ -126,13 +126,13 @@ private function payViaStripe($order , $gateway)
 //========================================================== SUCCESS PAYMENTS ==================================================================//
 
     public function paymentSuccess(Request $request)
-{
-    $orderId = $request->query('id');
-    $gateway = $request->query('gateway');
-
-    $order = Order::findOrFail($orderId);
-    $order->update([
-        'is_paid' => true
+    {
+        $orderId = $request->query('id');
+        $gateway = $request->query('gateway');
+    
+        $order = Order::findOrFail($orderId);
+        $order->update([
+            'is_paid' => true
     ]);
 
     if ($gateway === 'paymongo') {
@@ -165,7 +165,7 @@ private function payViaStripe($order , $gateway)
             ]);
         }
 
-    }elseif($gateway === 'stripe'){
+    }elseif($gateway === 'stripe') {
 
         $sessionId = session('stripe_checkout_id');
         $stripe = new StripeClient(env('STRIPE_SECRET'));
