@@ -2,6 +2,10 @@
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Livewire\Pages\Cart;
+use App\Livewire\Pages\Shop;
+use App\Livewire\Pages\Login;
+use App\Livewire\Pages\HomePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
@@ -13,7 +17,15 @@ Route::get('/', function () {
     $payments = Payment::with('order')->paginate(5, ['*'], 'payments_page'); 
 
     return view('welcome', compact('orders', 'payments'));
+
+    
 })->name('home');
+
+Route::get('/home',HomePage::class)->lazy();
+Route::get('/shop',Shop::class)->lazy();
+Route::get('/cart',Cart::class)->lazy();
+Route::get('/login',Login::class)->lazy();
+
 
 Route::get('payment/{id}/{gateway}',[PaymentController::class,'payment'])->name('payment');
 Route::get('payment-sucess',[PaymentController::class,'paymentSuccess'])->name('payment.sucess');
