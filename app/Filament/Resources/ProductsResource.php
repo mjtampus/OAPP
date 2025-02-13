@@ -30,9 +30,12 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\ProductsResource\Pages;
+use Filament\Pages\SubNavigationPosition;
 
 class ProductsResource extends Resource
 {
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
     protected static ?string $model = Products::class;
 
     protected static ?string $navigationGroup = 'Products';
@@ -94,33 +97,42 @@ class ProductsResource extends Resource
                                 ->label('Category')
                                 ->relationship('category', 'name')
                                 ->required(),
-                            Toggle::make('is_new_arrival')
-                                ->label('New Arrival')
-                                ->required(),
-                            Toggle::make('is_featured')
-                                ->label('Featured')
-                                ->required(),
+                        Section::make('Product Status')
+                                ->schema([
+                                    Toggle::make('is_new_arrival')
+                                    ->label('New Arrival')
+                                    ->required(),
+                                    Toggle::make('is_featured')
+                                    ->label('Featured')
+                                    ->required(),
+                                ])
                         ])
                         ->columnSpan(['lg' => 1]),
                 ])
                 ->columns(['lg' => 3]),
-        Section::make('Add Product Variants')
-                    ->description('Add some product variants for this product')
-                    ->schema([                  
-                        Repeater::make('attributes')
-                        ->relationship('attributes') // Target the attributes relationship in Product model
+                Section::make('Add Product Variants')
+                ->description('Add some product variants for this product')
+                ->schema([
+                    Repeater::make('attributes')
+                        ->relationship() // Target the attributes relationship in Product model
                         ->addActionLabel('Add more attributes')
                         ->schema([
                             Select::make('type')
                                 ->label('Attribute Type')
-                                ->options(
-                                    ['color' => 'Color', 'origin' => 'Origin', 'sizes' => 'Sizes']) // Adjust based on your data
-                                ->required(),
+                                ->options([
+                                    'color' => 'Color',
+                                    'origin' => 'Origin',
+                                    'sizes' => 'Sizes',
+                                ])
+                                ->live()
+                                ->disableOptionWhen(fn (string $value, callable $get): bool => 
+                                    in_array($value, array_column($get('../../attributes') ?? [], 'type'))
+                                ),
                             Repeater::make('product_attribute_values')
                                 ->relationship('product_attribute_values') // Target values in ProductAttribute model
                                 ->addActionLabel('Add more values')
                                 ->schema([
-                            TextInput::make('value')
+                                    TextInput::make('value')
                                         ->label('Value')
                                         ->required(),
                                 ])
@@ -129,7 +141,7 @@ class ProductsResource extends Resource
                         ])
                         ->minItems(1)
                         ->collapsible(),
-                    ]),
+                                ]),
             ]);
     }
 
@@ -192,25 +204,12 @@ class ProductsResource extends Resource
 
     public static function getRecordSubNavigation(Page $page): array
     {
-        $record = $page->getRecord();
+        return $page->generateNavigationItems([
 
-        return [
-            NavigationGroup::make()
-                ->label('Product Details')
-                ->icon('heroicon-o-shopping-bag')
-                ->collapsed()
-                ->items([
-                    NavigationItem::make()
-                        ->label('Basic Information')
-                        ->isActiveWhen(fn (): bool => $page instanceof Pages\EditProducts)
-                        ->url(Pages\EditProducts::getUrl(['record' => $record])),
-                        
-                    NavigationItem::make()
-                        ->label('Variations')
-                        ->isActiveWhen(fn (): bool => $page instanceof Pages\ProductVariations)
-                        ->url(Pages\ProductVariations::getUrl(['record' => $record])),
-                ]),
-        ];
+                Pages\EditProducts::class,            
+                Pages\ProductVariations::class
+
+        ]);
     }
 }
 
