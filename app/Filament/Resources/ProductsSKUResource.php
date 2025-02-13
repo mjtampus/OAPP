@@ -105,7 +105,4 @@ class ProductsSKUResource extends Resource
     {
         return false;
     }
-
-
-
 }

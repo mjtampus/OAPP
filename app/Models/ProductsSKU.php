@@ -20,7 +20,7 @@ class ProductsSKU extends Model
     ];
 
     protected $casts = [
-        'attributes' => 'array',
+        'attributes' => 'json',
     ];
     
 

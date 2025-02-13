@@ -87,7 +87,7 @@
                     @foreach($products as $product)
                     <div class="group bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-100">
                         <div class="relative">
-                            <img src="https://picsum.photos/400/300?random={{ $product }}" alt="Product Image" class="w-full h-48 object-cover">
+                            <img src="{{ Storage::url($product->product_image_dir) }}" alt="Product Image" class="w-full h-48 object-cover">
                             <div class="absolute top-3 right-3">
                                 <button class="bg-white p-2 rounded-full shadow-md hover:scale-110 transition-transform duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,15 +97,25 @@
                             </div>
                         </div>
                         <div class="p-5">
-                            <div class="mb-2">
-                                <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800">New Arrival</span>
-                            </div>
+                        <div class="mb-2">
+                        @if($product->is_featured)
+                            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800">
+                                Featured
+                            </span>
+                        @endif
+
+                        @if($product->is_new_arrival)
+                            <span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                                New Arrival
+                            </span>
+                        @endif
+                    </div>
                             <h3 class="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">{{$product->name}}</h3>
-                            <p class="mt-2 text-sm text-gray-500">{{$product->description}}</p>
+                            <div class="mt-2 text-sm text-gray-500">{!! $product->description !!}</div>
                             <div class="mt-4 flex items-center justify-between">
                                 <div>
-                                    <span class="text-lg font-bold text-gray-900">$199.99</span>
-                                    <span class="ml-2 text-sm text-gray-500 line-through">$249.99</span>
+                                    <span class="text-lg font-bold text-gray-900"> ${{ $product->price }}</span>
+                                    <!-- <span class="ml-2 text-sm text-gray-500 line-through">$249.99</span> -->
                                 </div>
                                 <button wire:click="addToCart({{$product->id}})" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center space-x-1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
