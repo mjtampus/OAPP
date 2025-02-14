@@ -111,8 +111,13 @@ class ProductsResource extends Resource
                 ])
                 ->columns(['lg' => 3]),
                 Section::make('Add Product Variants')
-                ->description('Add some product variants for this product')
+                ->description('Choose if you want to add product variants')
                 ->schema([
+                    Toggle::make('has_variants')
+                        ->label('Enable Variants')
+                        ->default(false)
+                        ->live(),
+            
                     Repeater::make('attributes')
                         ->relationship() // Target the attributes relationship in Product model
                         ->addActionLabel('Add more attributes')
@@ -134,14 +139,13 @@ class ProductsResource extends Resource
                                 ->schema([
                                     TextInput::make('value')
                                         ->label('Value')
-                                        ->required(),
                                 ])
-                                ->minItems(2)
                                 ->collapsible(),
                         ])
                         ->minItems(1)
-                        ->collapsible(),
-                                ]),
+                        ->collapsible()
+                        ->hidden(fn ($get) => !$get('has_variants')) // Hide if toggle is off
+                ]),
             ]);
     }
 

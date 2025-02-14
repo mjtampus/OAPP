@@ -11,20 +11,20 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 
 
-Route::get('/', function () {
+// Route::get('/', function () {
 
-    $orders = Order::with('payment')->paginate(5, ['*'], 'orders_page');
-    $payments = Payment::with('order')->paginate(5, ['*'], 'payments_page'); 
+//     $orders = Order::with('payment')->paginate(5, ['*'], 'orders_page');
+//     $payments = Payment::with('order')->paginate(5, ['*'], 'payments_page'); 
 
-    return view('welcome', compact('orders', 'payments'));
+//     return view('welcome', compact('orders', 'payments'));
 
     
-})->name('home');
+// })->name('home');
 
-Route::get('/home',HomePage::class)->lazy();
-Route::get('/shop',Shop::class)->lazy();
+Route::get('/',HomePage::class)->lazy();
+Route::get('/shop',Shop::class)->lazy()->name('shop');
 Route::get('/cart',Cart::class)->lazy();
-Route::get('/login',Login::class)->lazy();
+Route::get('/login',Login::class)->lazy()->name('login');
 
 
 Route::get('payment/{id}/{gateway}',[PaymentController::class,'payment'])->name('payment');
