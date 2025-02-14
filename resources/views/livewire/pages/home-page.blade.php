@@ -16,26 +16,7 @@
     <!-- Featured Products -->
     <section class="container mx-auto py-20 px-6">
         <h2 class="text-4xl font-bold mb-12 text-center fade-in">Featured Products</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        @foreach([1,2,3,4,5,6,7,8] as $product)
-        <div class="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 fade-in">
-            <div class="relative overflow-hidden group">
-                <img src="https://picsum.photos/400/300?random={{ $product }}" alt="Product" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-            <div class="p-6">
-                <h3 class="text-xl font-semibold mb-2">Product {{ $product }}</h3>
-                <div class="flex justify-between items-center">
-                    <p class="text-blue-600 font-bold">$19.99</p>
-                    <a href="/product/{{ $product }}" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
-                        View Details →
-                    </a>
-                </div>
-            </div>
-        </div>
-        @endforeach
-    </div>
-
+        <livewire:components.home-featured-products />
     </section>
 
     <!-- Newsletter Section -->

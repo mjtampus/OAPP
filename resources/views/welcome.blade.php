@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop ni Michael</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script> -->
+@extends('components.layouts.app') {{-- This matches the path of app.blade.php --}}
 
-</head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100">
+@section('title', 'Shop ni Michael')
 
-
-</body>
-</html>
+@section('content')
+    <div class="container mx-auto text-center">
+        <h1 class="text-3xl font-bold">Welcome to Shop ni Michael</h1>
+        <p class="text-gray-600 mt-4">Your best online shopping experience.</p>
+    </div>
+@endsection
