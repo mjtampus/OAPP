@@ -69,7 +69,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 1. clone this repository
 2. open the file open it with vs code and go to vs code terminal
-3. run <b> composer install </b>
+3. run <b> composer install and npm install </b>
 4. create .env file and copy the contents in env example
 5. run <b> php artisan key:generate <b>
 6. run <b> php artisan migrate </b> to migrate migrations
