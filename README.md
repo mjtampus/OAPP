@@ -73,8 +73,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 4. create .env file and copy the contents in env example
 5. run <b> php artisan key:generate <b>
 6. run <b> php artisan migrate </b> to migrate migrations
-
-## How to use tinker
-
-7. run command <b> php artisan tinker </b> hit enter
-8. type this <b> Order::factory()->count(30)->create() </b> hit enter again it will create 30 orders`
+7. run php artisan make:filament-user to create account and access it to localhost:8000/admin to go to the admin panel
+8. create brand and categories for your product
+9. create product for your shop
+10. No checkout and Product Details 
