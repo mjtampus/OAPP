@@ -57,35 +57,35 @@ class ProductVariations extends EditRecord
     {
         $variations = $data['variations'];
         unset($data['variations']);
-    
+        
         $record->update($data);
-    
+        
         $existingSkus = $record->sku->keyBy(fn($sku) => json_encode($sku->attributes));
-    
         $updatedSkus = [];
-    
+        
         foreach ($variations as $variation) {
             $attributesArray = collect($variation)
                 ->filter(fn($value, $key) => str_starts_with($key, 'variation_type_'))
                 ->map(fn($option) => [(int) $option['id'], (int) $option['value_id']])
                 ->values()
                 ->toArray();
-    
+            
+            $skuData = [
+                'stock' => $variation['stock'],
+                'price' => $variation['price'],
+                'sku_image_dir' => $variation['sku_image_dir'] ?? null,
+            ];
+            
             if (isset($existingSkus[json_encode($attributesArray)])) {
                 $existingSku = $existingSkus[json_encode($attributesArray)];
-                $existingSku->update([
-                    'stock' => $variation['stock'],
-                    'price' => $variation['price'],
-                ]);
+                $existingSku->update($skuData);
                 $updatedSkus[] = $existingSku->id;
             } else {
-                $newSku = ProductsSKU::create([
+                $newSku = ProductsSKU::create(array_merge($skuData, [
                     'sku' => $this->generateSKU($attributesArray),
                     'products_id' => $record->id,
                     'attributes' => $attributesArray,
-                    'stock' => $variation['stock'],
-                    'price' => $variation['price'],
-                ]);
+                ]));
                 $updatedSkus[] = $newSku->id;
             }
         }
@@ -94,6 +94,7 @@ class ProductVariations extends EditRecord
     
         return $record;
     }
+    
     
     protected function mutateFormDataBeforeFill(array $data): array
     {
