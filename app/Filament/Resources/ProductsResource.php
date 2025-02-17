@@ -27,10 +27,11 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use App\Filament\Resources\ProductsResource\Pages;
-use Filament\Pages\SubNavigationPosition;
 
 class ProductsResource extends Resource
 {
@@ -138,7 +139,11 @@ class ProductsResource extends Resource
                                 ->addActionLabel('Add more values')
                                 ->schema([
                                     TextInput::make('value')
-                                        ->label('Value')
+                                        ->label('Value'),
+                                    ColorPicker::make('code')
+                                        ->label('Color')
+                                        ->nullable()
+                                        ->hidden(fn (callable $get) => $get('../../type') !== 'color'),   
                                 ])
                                 ->collapsible(),
                         ])

@@ -12,6 +12,7 @@ class ProductsAttributesValues extends Model
     protected $fillable = [
         'products_attributes_id',
         'value',
+        'code',
     ];
 
     public function attribute(): BelongsTo

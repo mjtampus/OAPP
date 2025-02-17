@@ -141,42 +141,11 @@
                                 <!-- 🔥 Push Price & Button to the Bottom -->
                                 <div class="mt-auto flex items-center justify-between w-full">
                                     <span class="text-lg font-bold text-gray-900">${{ $product->price }}</span>
-                                    @if(isset($cart[$product->id]))
-                                    <button 
-                                        wire:click="addToCart({{ $product->id }})"
+                                    <a href="{{ route('product.details', ['productId' => $product->id]) }}"
                                         class="px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors duration-200
-                                            bg-red-600 text-white hover:bg-red-700 
-                                           ">
-                                        <span wire:loading.remove wire:target="addToCart({{ $product->id }})">
-                                            Remove to cart
-                                        </span>
-                                    
-                                        <span wire:loading wire:target="addToCart({{ $product->id }})">
-                                            Removing...
-                                        </span>
-                                    </button>
-                             
-                                @else
-                                    <button 
-                                        wire:click="addToCart({{ $product->id }})"
-                                        class="px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors duration-200
-                                            @if(isset($cart[$product->id])) bg-green-600 text-white hover:bg-green-700 
-                                            @else bg-purple-600 text-white hover:bg-purple-700 @endif">
-                                        
-                                        <svg wire:loading.remove wire:target="addToCart({{ $product->id }})" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                        </svg>
-
-                                        <span wire:loading.remove wire:target="addToCart({{ $product->id }})">
-                                            Add To Cart
-                                        </span>
-                                    
-                                        <span wire:loading wire:target="addToCart({{ $product->id }})">
-                                            Adding to cart...
-                                        </span>
-                                    </button>
-                                
-                                @endif
+                                            bg-red-600 text-white hover:bg-red-700">
+                                        <span>View Details</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
