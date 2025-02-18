@@ -6,9 +6,9 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div class="p-6">
-                <h3 class="text-xl font-semibold mb-2">Product {{ $product->name }}</h3>
+                <h3 class="text-xl font-semibold mb-2">{{ $product->name }}</h3>
                 <div class="flex justify-between items-center">
-                    <p class="text-blue-600 font-bold">${{$product->price}}</p>
+                    <p class="text-blue-600 font-bold">₱{{ number_format($product->price) , 2}}</p>
                     <a href="/product/{{ $product->id }}" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
                         View Details →
                     </a>

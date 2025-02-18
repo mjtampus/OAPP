@@ -4,6 +4,7 @@ namespace App\Livewire\Pages;
 
 use Livewire\Component;
 use App\Models\Products;
+use App\Models\ProductsSKU;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ class Cart extends Component
     public $tax = 0;
     public $shipping = 9.99;
     public $total = 0;
+    protected $listeners = ['auth-user-cart' => 'refreshCart'] ;
     
     public function mount()
     {
@@ -26,15 +28,24 @@ class Cart extends Component
     public function refreshCart()
     {
         $cart = Session::get('cart', []);
-
+        // dd($cart);
 
         if (!empty($cart)) {
-            $cartIds = array_keys($cart);
-            $products = Products::whereIn('id', $cartIds)->get();
-            
-            $this->cartProducts = $products->map(function ($product) use ($cart) {
-                $product->quantity = $cart[$product->id]['quantity'];
-                return $product;
+            $cartIds = collect($cart)->pluck('id')->toArray();
+            $productskus = ProductsSKU::whereIn('id', $cartIds)->get();;
+
+            $this->cartProducts = $productskus->map(function ($sku) use ($cart) {
+                $cartItem = collect($cart)->firstWhere('id', $sku->id);
+                $products = Products::find($sku->products_id);
+                return  [
+                    'id' => $sku->id,
+                    'name' => $products->name,
+                    'description' => $products->description,
+                    'sku' => $sku->sku,
+                    'image' => $sku->sku_image_dir,
+                    'price' => $sku->price,
+                    'quantity' => $cartItem['quantity'] ?? 1
+                ];
             });
             $this->calculateTotals();
         } else {
@@ -46,9 +57,11 @@ class Cart extends Component
     public function incrementQuantity($productId)
     {
         $cart = Session::get('cart', []);
-        
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity']++;
+
+        $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
+
+        if ($index !== false) {
+            $cart[$index]['quantity']++;
             Session::put('cart', $cart);
             $this->refreshCart();
         }
@@ -57,14 +70,17 @@ class Cart extends Component
     public function decrementQuantity($productId)
     {
         $cart = Session::get('cart', []);
-        
-        if (isset($cart[$productId])) {
-            if ($cart[$productId]['quantity'] > 1) {
-                $cart[$productId]['quantity']--;
+
+        $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
+
+        if ($index !== false) {
+            if ($cart[$index]['quantity'] > 1) {
+                $cart[$index]['quantity']--;
             } else {
-                unset($cart[$productId]);
+                unset($cart[$index]);
+                $cart = array_values($cart); // Reindex the array
             }
-            
+
             Session::put('cart', $cart);
             $this->dispatch('cart-updated');
             $this->refreshCart();
@@ -74,17 +90,16 @@ class Cart extends Component
     public function removeFromCart($productId)
     {
         $cart = Session::get('cart', []);
-        
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]);
-            Session::put('cart', $cart);
-            $this->refreshCart();
-            $this->dispatch('cart-updated');
-            $this->dispatch('notify', [
-                'message' => 'Item removed from cart',
-                'type' => 'success'
-            ]);
-        }
+
+        $cart = collect($cart)->reject(fn($item) => $item['id'] === $productId)->values()->toArray();
+
+        Session::put('cart', $cart);
+        $this->refreshCart();
+        $this->dispatch('cart-updated');
+        $this->dispatch('notify', [
+            'message' => 'Item removed from cart',
+            'type' => 'success'
+        ]);
     }
 
     public function clearCart()
@@ -100,10 +115,7 @@ class Cart extends Component
 
     private function calculateTotals()
     {
-        $this->subtotal = $this->cartProducts->sum(function($product) {
-            return $product->price * $product->quantity;
-        });
-        
+        $this->subtotal = collect($this->cartProducts)->sum(fn($product) => $product['price'] * $product['quantity']);
         $this->tax = $this->subtotal * 0.1; // 10% tax
         $this->total = $this->subtotal + $this->tax + $this->shipping;
     }
@@ -129,8 +141,6 @@ class Cart extends Component
     
         return redirect(route('login')); // Redirect guests to login
     }
-    
-
 
     public function render()
     {

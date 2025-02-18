@@ -120,7 +120,7 @@ class ProductsResource extends Resource
                         ->live(),
             
                     Repeater::make('attributes')
-                        ->relationship() // Target the attributes relationship in Product model
+                        ->relationship()
                         ->addActionLabel('Add more attributes')
                         ->schema([
                             Select::make('type')

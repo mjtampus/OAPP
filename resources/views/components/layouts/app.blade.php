@@ -6,8 +6,6 @@
         @vite('resources/css/app.css')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
 
         <title>{{ $title ?? 'Page Title' }}</title>
         @livewireStyles
@@ -30,7 +28,9 @@
                 </div>
             </div>
         </div>
-
+            <div class="toastify">
+                <livewire:components.toast />
+            </div>
         <div class="flex-grow relative">
             <!-- Livewire Loading Indicator (Covers Only the Slot Content) -->
             <div wire:loading.delay class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-40">

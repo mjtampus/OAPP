@@ -17,8 +17,8 @@
                                 <div class="flex gap-4">
                                     <div class="w-24 sm:w-32 overflow-hidden rounded-xl bg-gray-50 aspect-square">
                                         <img 
-                                            src="{{ Storage::url($product->product_image_dir) }}"
-                                            alt="{{ $product->name }}" 
+                                            src="{{ Storage::url($product['image']) }}"
+                                            alt="{{ $product['name'] }}" 
                                             class="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
                                         >
                                     </div>
@@ -26,32 +26,32 @@
                                     <div class="flex-1 flex flex-col justify-between">
                                         <div>
                                             <h3 class="text-lg font-semibold text-gray-900 group-hover:text-violet-600 transition-colors duration-300">
-                                                {{ $product->name }}
+                                                {{ $product['name'] }}
                                             </h3>
                                             <p class="text-sm text-gray-500 mt-1">
-                                                {!! $product->description !!}
+                                                {!! $product['description'] !!}
                                             </p>
                                         </div>
                                         
                                         <div class="mt-4 flex flex-wrap justify-between items-end gap-4">
                                             <div class="text-xl font-bold text-gray-900">
-                                                ${{ number_format($product->price, 2) }}
+                                            ₱{{ number_format($product['price'], 2) }}
                                             </div>
                                             
                                             <div class="flex items-center gap-2">
                                                 <div class="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
                                                     <button 
-                                                        wire:click="decrementQuantity({{ $product->id }})"
+                                                        wire:click="decrementQuantity({{ $product['id'] }})"
                                                         wire:loading.attr="disabled"
                                                         class="w-8 h-8 flex items-center justify-center rounded-md bg-white shadow-sm hover:bg-violet-600 hover:text-white transition-all duration-300"
                                                     >
                                                         -
                                                     </button>
                                                     <span class="w-10 text-center text-base font-medium">
-                                                        {{ $product->quantity }}
+                                                        {{ $product['quantity'] }}
                                                     </span>
                                                     <button 
-                                                        wire:click="incrementQuantity({{ $product->id }})"
+                                                        wire:click="incrementQuantity({{ $product['id'] }})"
                                                         wire:loading.attr="disabled"
                                                         class="w-8 h-8 flex items-center justify-center rounded-md bg-white shadow-sm hover:bg-violet-600 hover:text-white transition-all duration-300"
                                                     >
@@ -59,7 +59,7 @@
                                                     </button>
                                                 </div>
                                                 <button 
-                                                    wire:click="removeFromCart({{ $product->id }})"
+                                                    wire:click="removeFromCart({{ $product['id'] }})"
                                                     wire:loading.attr="disabled"
                                                     class="text-red-500 hover:text-red-600 transition-colors duration-300"
                                                 >
@@ -86,22 +86,22 @@
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Subtotal</span>
-                            <span>${{ number_format($subtotal, 2) }}</span>
+                            <span>₱{{ number_format($subtotal, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Shipping</span>
-                            <span>${{ number_format($shipping, 2) }}</span>
+                            <span>₱{{ number_format($shipping, 2) }}</span>
                         </div>
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Tax</span>
-                            <span>${{ number_format($tax, 2) }}</span>
+                            <span>₱{{ number_format($tax, 2) }}</span>
                         </div>
 
                         <!-- Total -->
                         <div class="border-t border-gray-100 pt-3 mt-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-base font-semibold text-gray-900">Total</span>
-                                <span class="text-xl font-bold text-gray-900">${{ number_format($total, 2) }}</span>
+                                <span class="text-xl font-bold text-gray-900">₱{{ number_format($total, 2) }}</span>
                             </div>
                         </div>
                     </div>

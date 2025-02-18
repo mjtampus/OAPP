@@ -48,33 +48,6 @@ class Shop extends Component
         $this->resetPage();
     }
 
-    public function addToCart($productId)
-    {
-        $product = Products::find($productId);
-
-        if (!$product) {
-            return;
-        }
-
-        $cart = Session::get('cart', []);
-
-        // Check if product already exists in the cart
-        if (isset($cart[$productId])) {
-            unset($cart[$productId]); 
-        } else {
-            $cart[$productId] = [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->price,
-                'quantity' => 1,
-            ];
-        }
-
-        Session::put('cart', $cart);
-        $this->dispatch('cart-updated');
-        $this->cart = $cart;
-    }
-
     public function getProducts()
     {
         $query = Products::query()->with('category', 'brand');
@@ -95,9 +68,7 @@ class Shop extends Component
                   ->orWhere('description', 'like', '%' . $this->searchQuery . '%');
             });
         }
-        
         return $query->paginate(6);
-        
     }
 
     public function likeProduct($productId)
@@ -105,10 +76,10 @@ class Shop extends Component
         $product = Products::find($productId);
         $user = Auth::user();
 
-        if ($user->id === 1) {
+        if (Auth::id() === 1 || !Auth::check()) {
             return redirect(route('login'));
         }
-        else if ($user->id !== 1) {
+        else if (Auth::id() !== 1) {
             $user->like($product);
             $this->dispatch('product-liked', ['productId' => $productId]);
             $this->dispatch('notify', [

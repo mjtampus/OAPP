@@ -136,14 +136,14 @@
 
                                 <!-- 🔥 Fixed Height for Description -->
                                 <div class="mt-2 text-sm text-gray-500 h-16 overflow-hidden">
-                                    {!! $product->description !!}
+                                    {!! Str::limit($product->description) !!}
                                 </div>
                                 <!-- 🔥 Push Price & Button to the Bottom -->
                                 <div class="mt-auto flex items-center justify-between w-full">
-                                    <span class="text-lg font-bold text-gray-900">${{ $product->price }}</span>
+                                    <span class="text-lg font-bold text-gray-900">₱{{ number_format($product->price), 2 }}</span>
                                     <a href="{{ route('product.details', ['productId' => $product->id]) }}"
                                         class="px-4 py-2 rounded-lg flex items-center space-x-1 transition-colors duration-200
-                                            bg-red-600 text-white hover:bg-red-700">
+                                            bg-purple-600 text-white hover:bg-purple-700">
                                         <span>View Details</span>
                                     </a>
                                 </div>

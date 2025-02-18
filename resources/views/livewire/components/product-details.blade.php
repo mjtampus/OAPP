@@ -4,14 +4,9 @@
             <div class="lg:grid lg:grid-cols-2 lg:gap-0">
                 <!-- Image Section -->
                 <div class="relative h-[600px] bg-gray-100">
-                    @if($selectedImage)
-                        <img src="{{ Storage::url($selectedImage) }}" alt="Selected Variation" 
-                            class="absolute inset-0 w-full h-full object-contain">
-                    @else
-                        <img src="{{ Storage::url($product->product_image_dir) }}" 
-                            alt="{{ $product['name'] ?? 'Product Image' }}" 
-                            class="absolute inset-0 w-full h-full object-contain">
-                    @endif
+                <img src="{{ Storage::url($selectedSkuVariant->sku_image_dir ?? $product->product_image_dir) }}" 
+                      alt="{{ $selectedSkuVariant ? 'Selected Variation' : ($product['name'] ?? 'Product Image') }}" 
+                      class="absolute inset-0 w-full h-full object-contain">
                     <div class="absolute top-4 left-4">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white text-gray-800 shadow-md">
                             New Arrival
@@ -26,10 +21,10 @@
                         <!-- Header -->
                         <div>
                             <h1 class="text-4xl font-bold text-gray-900 mb-4">
-                                {{ $product['name'] ?? 'Product Name' }}
+                            {{ $product['name'] ?? 'Product Name' }}
                             </h1>
                             <p class="text-2xl font-semibold text-indigo-600">
-                                ${{ number_format($product['price'] ?? 0, 2) }}
+                            ₱{{ number_format( $selectedSkuVariant->price ?? $product['price'] ?? 0, 2) }}
                             </p>
                         </div>
 
@@ -50,13 +45,10 @@
                                         <span class="h-10 w-10 rounded-full flex items-center justify-center
                                                     {{ $selectedColor && $selectedColor[0] == $color->products_attributes_id && $selectedColor[1] == $color->id ? 'ring-2 ring-indigo-600 ring-offset-2' : '' }}">
                                             <span class="h-8 w-8 rounded-full" 
-                                                style="background-color: {{ $color->code }}"></span>
+                                                    style="background-color: {{ $color->code }}"></span>
                                     </div>
                                 </button>
                             @endforeach
-
-
-
                             </div>
                         </div>
 
@@ -103,8 +95,11 @@
                                     focus:ring-offset-2 transition-colors duration-200
                                     disabled:opacity-50 disabled:cursor-not-allowed"
                                 @disabled(!$selectedColor || !$selectedSize)>
-                                Add to Cart
+                                <span> Add to Cart </span>
+                                <span wire:loading wire:target = "addToCart"> Adding to cart... </span>
                             </button>
+                                
+
                         </div>
 
                         <!-- Notification Message -->

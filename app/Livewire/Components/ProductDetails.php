@@ -7,6 +7,7 @@ use App\Models\ProductsSKU;
 use Livewire\Attributes\Title;
 use App\Models\ProductsAttributes;
 use App\Models\ProductsAttributesValue;
+use Illuminate\Support\Facades\Session;
 use App\Models\ProductsAttributesValues;
 
 #[Title('Products')]
@@ -21,14 +22,13 @@ class ProductDetails extends Component
 
     public $selectedColor = null;
     public $selectedSize = null;
-    public $selectedImage = null;
+    public $selectedSkuVariant = null;
     public $quantity = 1;
 
     public function mount($productId)
     {
         $this->product = Products::with('sku')->find($productId);
         $this->loadVariations();
- 
     }
 
     private function loadVariations()
@@ -49,7 +49,7 @@ class ProductDetails extends Component
 
     
         foreach ($this->skus as $sku) {
-            // Get the attributes of each SKU (assuming it's stored as JSON)
+            // Get the attributes of each SKU 
             $attributes = $sku->attributes ?? [];
     
             foreach ($attributes as $attribute) {
@@ -62,7 +62,6 @@ class ProductDetails extends Component
                     $color = $this->getAttributeValue($attrValueId);
                     if ($color && !in_array($color, $this->colors)) {
                         $this->colors[] = $color;
-                       
                     }
                 }
 
@@ -84,52 +83,70 @@ class ProductDetails extends Component
     public function selectColor($attributeId , $valueId)
     {
         $this->selectedColor = [$attributeId, $valueId];  // Store both attribute and value
-        $this->updateSelectedImage();
+        $this->updateSelectedSkuVariant();
     }
     
     public function selectSize($attributeId , $valueId)
     {
         $this->selectedSize = [$attributeId, $valueId];  // Store both attribute and value
-        $this->updateSelectedImage();
+        $this->updateSelectedSkuVariant();
+    }
+    public function incrementQuantity()
+    {
+        $this->quantity++;
+    }
+    public function decrementQuantity()
+    {
+        if ($this->quantity > 1) {
+            $this->quantity--;
+        }
     }
     
-
     public function addToCart()
     {
-        if (!$this->selectedColor || !$this->selectedSize) {
-            $this->dispatchBrowserEvent('notify', [
-                'message' => 'Please select both color and size!'
+        if (!$this->selectedSkuVariant) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please select a color and size.'
             ]);
-            return;
         }
+    
+        $cart = Session::get('cart', []);
+    
+        $index = collect($cart)->search(fn($item) => $item['id'] === $this->selectedSkuVariant->id);
+    
+        if ($index !== false) {
 
-        // Find SKU with matching attributes
-        $selectedSku = $this->skus->first(function ($sku) {
-            $attributes = json_decode($sku->attributes, true);
-            return in_array([$this->selectedColor, 1], $attributes) &&
-                   in_array([$this->selectedSize, 2], $attributes);
-        });
+            $cart[$index]['quantity'] += $this->quantity;
+        } else {
 
-        if (!$selectedSku) {
-            $this->dispatchBrowserEvent('notify', [
-                'message' => 'Selected combination is not available!'
-            ]);
-            return;
+            $cart[] = [
+                'id' => $this->selectedSkuVariant->id,
+                'p_id' => $this->selectedSkuVariant->products_id,
+                'quantity' => $this->quantity
+            ];
         }
-
-        // Add to cart logic (e.g., session or database)
-        $this->dispatchBrowserEvent('notify', [
-            'message' => 'Product added to cart!'
+    
+        Session::put('cart', $cart);
+    
+        $this->dispatch('cart-updated');
+        $this->dispatch('auth-user-cart');
+    
+        $this->dispatch('notify', 
+        ['message' => 'Cart added successfully',
+         'type' => 'success'
         ]);
     }
-
-    private function updateSelectedImage()
+    
+    
+    private function updateSelectedSkuVariant()
     {
         if (!$this->selectedColor || !$this->selectedSize) {
-            $this->selectedImage = null;
+            $this->selectedSkuVariant = null; // Clear the selected variant if no color or size is selected
             return;
         }
     
+        // Find the SKU variant matching the selected color and size
         $selectedSku = $this->skus->first(function ($sku) {
             $attributes = $sku->attributes;
             
@@ -144,16 +161,12 @@ class ProductDetails extends Component
     
             return $hasColor && $hasSize;
         });
-
-        
-        $this->selectedImage = $selectedSku ? $selectedSku->sku_image_dir : null;
-
+    
+        $this->selectedSkuVariant = $selectedSku ? $selectedSku : null;
     }
-
+    
     public function render()
     {
-        return view('livewire.components.product-details', [
-            'selectedImage' => $this->selectedImage,
-        ]);
+        return view('livewire.components.product-details');
     }
 }
