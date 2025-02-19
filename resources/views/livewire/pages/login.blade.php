@@ -7,28 +7,52 @@
             <div class="w-1/2 p-8 flex flex-col justify-center items-center transition-all duration-500" id="login-form">
                 <h2 class="text-2xl font-semibold text-gray-700">Welcome Back!</h2>
                 <p class="text-gray-600 mb-14">Login to continue</p>
-                <form action="" method="POST" class="w-full max-w-xs">
+                
+                <form wire:submit.prevent="login" class="w-full max-w-xs">
                     @csrf
-                    <input type="email" name="email" placeholder="Email" required class="w-full p-3 mb-4 border border-gray-300 rounded">
-                    <input type="password" name="password" placeholder="Password" required class="w-full p-3 mb-4 border border-gray-300 rounded">
-                    <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600">Login</button>
+                    <input type="email" wire:model.defer="email" placeholder="Email" required class="w-full p-3 mb-4 border border-gray-300 rounded">
+                    <input type="password" wire:model.defer="password" placeholder="Password" required class="w-full p-3 mb-4 border border-gray-300 rounded">
+                    
+                    <button type="submit" 
+                        class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 disabled:opacity-50"
+                        wire:loading.attr="disabled" 
+                        wire:target="login">
+                        Login
+                    </button>
                 </form>
+
                 <p class="text-blue-500 cursor-pointer mt-4" onclick="toggleForms()">Don't have an account? Register</p>
+                
+                <!-- Loading Spinner -->
+                <div wire:loading wire:target="login" class="mt-4 text-gray-500">Logging in...</div>
             </div>
+
 
             <!-- Right Section (Register) -->
             <div class="w-1/2 p-8 mt-[150px] flex flex-col justify-center items-center transition-all duration-500 absolute right-[-100%]" id="register-form">
                 <h2 class="text-2xl font-semibold text-gray-700">Come Aboard!</h2>
                 <p class="text-gray-600 mb-4">Register to get started</p>
-                <form action="" method="POST" class="w-full max-w-xs">
+                
+                <form wire:submit.prevent="register" class="w-full max-w-xs">
                     @csrf
-                    <input type="text" name="name" placeholder="Full Name" required class="w-full p-3 mb-4 border border-gray-300 rounded">
-                    <input type="email" name="email" placeholder="Email" required class="w-full p-3 mb-4 border border-gray-300 rounded">
-                    <input type="password" name="password" placeholder="Password" required class="w-full p-3 mb-4 border border-gray-300 rounded">
-                    <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600">Register</button>
+                    <input type="text" wire:model.defer="name" placeholder="Full Name" required class="w-full p-3 mb-4 border border-gray-300 rounded">
+                    <input type="email" wire:model.defer="email" placeholder="Email" required class="w-full p-3 mb-4 border border-gray-300 rounded">
+                    <input type="password" wire:model.defer="password" placeholder="Password" required class="w-full p-3 mb-4 border border-gray-300 rounded">
+                    
+                    <button type="submit" 
+                        class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 disabled:opacity-50"
+                        wire:loading.attr="disabled" 
+                        wire:target="register">
+                        Register
+                    </button>
                 </form>
+
                 <p class="text-blue-500 cursor-pointer mt-4" onclick="toggleForms()">Already have an account? Login</p>
+                
+                <!-- Loading Spinner -->
+                <div wire:loading wire:target="register" class="mt-4 text-gray-500">Registering...</div>
             </div>
+
 
             <!-- Image Section (Now positioned correctly on the right) -->
             <div class="absolute top-0 right-0 w-1/2 h-full transition-all duration-500" id="image-section">

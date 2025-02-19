@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Brand;
+use App\Models\Carts;
 use App\Models\Category;
 use App\Models\ProductsSKU;
 use App\Models\ProductsAttributes;
@@ -43,5 +44,10 @@ class Products extends Model
     public function sku() :HasMany
     {
         return $this->hasMany(ProductsSKU::class);
+    }
+
+    public function carts() :HasMany
+    {
+        return $this->hasMany(Carts::class);
     }
 }

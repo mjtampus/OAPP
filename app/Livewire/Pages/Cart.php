@@ -5,6 +5,7 @@ namespace App\Livewire\Pages;
 use Livewire\Component;
 use App\Models\Products;
 use App\Models\ProductsSKU;
+use App\Models\Carts;
 use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,9 @@ class Cart extends Component
     public $tax = 0;
     public $shipping = 9.99;
     public $total = 0;
-    protected $listeners = ['auth-user-cart' => 'refreshCart'] ;
-    
+
+    protected $listeners = ['auth-user-cart' => 'refreshCart'];
+
     public function mount()
     {
         $this->refreshCart();
@@ -27,26 +29,65 @@ class Cart extends Component
 
     public function refreshCart()
     {
+        if (Auth::check()) {
+            $this->loadAuthUserCart();
+        } else {
+            $this->loadGuestCart();
+        }
+    }
+
+    private function loadAuthUserCart()
+    {
+        $userId = Auth::id();
+        $cartItems = Carts::where('user_id', $userId)->get();
+
+        if ($cartItems->isNotEmpty()) {
+            $cartIds = $cartItems->pluck('sku_id')->toArray();
+            $productSkus = ProductsSKU::whereIn('id', $cartIds)->get();
+
+            $this->cartProducts = $productSkus->map(function ($sku) use ($cartItems) {
+                $cartItem = $cartItems->firstWhere('sku_id', $sku->id);
+                $product = Products::find($sku->products_id);
+                return [
+                    'id' => $sku->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'sku' => $sku->sku,
+                    'image' => $sku->sku_image_dir,
+                    'price' => $sku->price,
+                    'quantity' => $cartItem->quantity ?? 1
+                ];
+            });
+
+            $this->calculateTotals();
+        } else {
+            $this->cartProducts = [];
+            $this->resetTotals();
+        }
+    }
+
+    private function loadGuestCart()
+    {
         $cart = Session::get('cart', []);
-        // dd($cart);
 
         if (!empty($cart)) {
             $cartIds = collect($cart)->pluck('id')->toArray();
-            $productskus = ProductsSKU::whereIn('id', $cartIds)->get();;
+            $productSkus = ProductsSKU::whereIn('id', $cartIds)->get();
 
-            $this->cartProducts = $productskus->map(function ($sku) use ($cart) {
+            $this->cartProducts = $productSkus->map(function ($sku) use ($cart) {
                 $cartItem = collect($cart)->firstWhere('id', $sku->id);
-                $products = Products::find($sku->products_id);
-                return  [
+                $product = Products::find($sku->products_id);
+                return [
                     'id' => $sku->id,
-                    'name' => $products->name,
-                    'description' => $products->description,
+                    'name' => $product->name,
+                    'description' => $product->description,
                     'sku' => $sku->sku,
                     'image' => $sku->sku_image_dir,
                     'price' => $sku->price,
                     'quantity' => $cartItem['quantity'] ?? 1
                 ];
             });
+
             $this->calculateTotals();
         } else {
             $this->cartProducts = [];
@@ -56,44 +97,58 @@ class Cart extends Component
 
     public function incrementQuantity($productId)
     {
-        $cart = Session::get('cart', []);
-
-        $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
-
-        if ($index !== false) {
-            $cart[$index]['quantity']++;
-            Session::put('cart', $cart);
-            $this->refreshCart();
+        if (Auth::check()) {
+            $cartItem = Carts::where('user_id', Auth::id())->where('sku_id', $productId)->first();
+            if ($cartItem) {
+                $cartItem->increment('quantity');
+            }
+        } else {
+            $cart = Session::get('cart', []);
+            $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
+            if ($index !== false) {
+                $cart[$index]['quantity']++;
+                Session::put('cart', $cart);
+            }
         }
+        $this->refreshCart();
     }
 
     public function decrementQuantity($productId)
     {
-        $cart = Session::get('cart', []);
-
-        $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
-
-        if ($index !== false) {
-            if ($cart[$index]['quantity'] > 1) {
-                $cart[$index]['quantity']--;
-            } else {
-                unset($cart[$index]);
-                $cart = array_values($cart); // Reindex the array
+        if (Auth::check()) {
+            $cartItem = Carts::where('user_id', Auth::id())->where('sku_id', $productId)->first();
+            if ($cartItem) {
+                if ($cartItem->quantity > 1) {
+                    $cartItem->decrement('quantity');
+                } else {
+                    $cartItem->delete();
+                }
             }
-
-            Session::put('cart', $cart);
-            $this->dispatch('cart-updated');
-            $this->refreshCart();
+        } else {
+            $cart = Session::get('cart', []);
+            $index = collect($cart)->search(fn($item) => $item['id'] === $productId);
+            if ($index !== false) {
+                if ($cart[$index]['quantity'] > 1) {
+                    $cart[$index]['quantity']--;
+                } else {
+                    unset($cart[$index]);
+                    $cart = array_values($cart);
+                }
+                Session::put('cart', $cart);
+            }
         }
+        $this->dispatch('cart-updated');
+        $this->refreshCart();
     }
 
     public function removeFromCart($productId)
     {
-        $cart = Session::get('cart', []);
-
-        $cart = collect($cart)->reject(fn($item) => $item['id'] === $productId)->values()->toArray();
-
-        Session::put('cart', $cart);
+        if (Auth::check()) {
+            Carts::where('user_id', Auth::id())->where('sku_id', $productId)->delete();
+        } else {
+            $cart = collect(Session::get('cart', []))->reject(fn($item) => $item['id'] === $productId)->values()->toArray();
+            Session::put('cart', $cart);
+        }
         $this->refreshCart();
         $this->dispatch('cart-updated');
         $this->dispatch('notify', [
@@ -104,7 +159,11 @@ class Cart extends Component
 
     public function clearCart()
     {
-        Session::forget('cart');
+        if (Auth::check()) {
+            Carts::where('user_id', Auth::id())->delete();
+        } else {
+            Session::forget('cart');
+        }
         $this->refreshCart();
         $this->dispatch('cart-updated');
         $this->dispatch('notify', [
@@ -130,15 +189,11 @@ class Cart extends Component
     public function checkout()
     {
         if (Auth::check()) {
-            $user = auth()->user();
-    
-            if ($user->id === 1) { 
+            if (Auth::id() === 1) { 
                 return redirect(route('login')); // Redirect user ID 1 to login
             }
-    
-            return redirect(route('checkout')); // Redirect all other logged-in users to checkout
+            return redirect(route('checkout')); // Redirect logged-in users to checkout
         } 
-    
         return redirect(route('login')); // Redirect guests to login
     }
 

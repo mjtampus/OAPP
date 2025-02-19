@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Carts;
 use App\Models\Products;
 use App\Models\ProductsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductsAttributesValues;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductsSKU extends Model
@@ -39,6 +41,10 @@ public function product_attribute() :BelongsTo
 public function product_attribute_value() :BelongsTo
 {
     return $this->belongsTo(ProductsAttributesValues::class);
+}
+public function carts() :HasMany
+{
+    return $this->hasMany(Carts::class);
 }
 
 }

@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Components;
 
+use App\Models\Carts;
 use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class ShopHeaderNavigation extends Component
@@ -13,13 +15,23 @@ class ShopHeaderNavigation extends Component
 
     public function mount()
     {
-        $cart = Session::get('cart',[]);
-        $this->cartCount = count($cart);
+        $this->updateCartCount();
     }
     public function updateCartCount()
     {
-        $cart = Session::get('cart', []); // Default to an empty array if null
-        $this->cartCount = is_array($cart) ? count($cart) : 0; // Ensure count() is used on an array
+        if (!Auth::check()) {
+            $cart = Session::get('cart', []); // Default to an empty array if null
+            $this->cartCount = is_array($cart) ? count($cart) : 0; // Ensure count() is used on an array 
+        }else{
+            $this->cartCount = Carts::where('user_id', Auth::id())->count();
+        }
+
+    }
+    public function logout()
+    {
+        Auth::logout();
+
+        return redirect(route('login'));
     }
     public function render()
     {

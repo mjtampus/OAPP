@@ -5,6 +5,7 @@ use App\Models\Payment;
 use App\Livewire\Pages\Cart;
 use App\Livewire\Pages\Shop;
 use App\Livewire\Pages\Login;
+use App\Livewire\Pages\Checkout;
 use App\Livewire\Pages\HomePage;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;
@@ -22,10 +23,11 @@ use App\Livewire\Components\ProductDetails;
     
 // })->name('home');
 
-Route::get('/',HomePage::class)->lazy();
+Route::get('/',HomePage::class)->lazy()->name('home');
 Route::get('/shop',Shop::class)->lazy()->name('shop');
 Route::get('/cart',Cart::class)->lazy();
 Route::get('/login',Login::class)->lazy()->name('login');
+Route::get('/checkout' ,Checkout::class)->name('checkout'); 
 Route::get('/product/{productId}', ProductDetails::class)->name('product.details');
 
 

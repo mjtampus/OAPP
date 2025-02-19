@@ -1,6 +1,7 @@
 <?php
 namespace App\Livewire\Components;
 
+use App\Models\Carts;
 use Livewire\Component;
 use App\Models\Products;
 use App\Models\ProductsSKU;
@@ -111,32 +112,58 @@ class ProductDetails extends Component
             ]);
         }
     
-        $cart = Session::get('cart', []);
+        $quantity = $this->quantity;
+        $skuId = $this->selectedSkuVariant->id;
+        $productId = $this->selectedSkuVariant->products_id;
     
-        $index = collect($cart)->search(fn($item) => $item['id'] === $this->selectedSkuVariant->id);
+        if (auth()->check()) {
+            // User is logged in, store in database
+            $userId = auth()->id();
+            
+            $cartItem = Carts::where('user_id', $userId)
+                ->where('sku_id', $skuId)
+                ->first();
     
-        if ($index !== false) {
+            if ($cartItem) {
+                $cartItem->increment('quantity', $quantity);
+            } else {
+                Carts::create([
+                    'user_id' => $userId,
+                    'sku_id' => $skuId,
+                    'products_id' => $productId,
+                    'quantity' => $quantity,
+                ]);
+            }
 
-            $cart[$index]['quantity'] += $this->quantity;
+            $this->dispatch('auth-user-cart');
+
         } else {
-
-            $cart[] = [
-                'id' => $this->selectedSkuVariant->id,
-                'p_id' => $this->selectedSkuVariant->products_id,
-                'quantity' => $this->quantity
-            ];
+            // User is not logged in, store in session
+            $cart = Session::get('cart', []);
+    
+            $index = collect($cart)->search(fn($item) => $item['id'] === $skuId);
+    
+            if ($index !== false) {
+                $cart[$index]['quantity'] += $quantity;
+            } else {
+                $cart[] = [
+                    'id' => $skuId,
+                    'p_id' => $productId,
+                    'quantity' => $quantity
+                ];
+            }
+    
+            Session::put('cart', $cart);
         }
     
-        Session::put('cart', $cart);
-    
         $this->dispatch('cart-updated');
-        $this->dispatch('auth-user-cart');
     
-        $this->dispatch('notify', 
-        ['message' => 'Cart added successfully',
-         'type' => 'success'
+        $this->dispatch('notify', [
+            'message' => 'Cart added successfully',
+            'type' => 'success'
         ]);
     }
+    
     
     
     private function updateSelectedSkuVariant()

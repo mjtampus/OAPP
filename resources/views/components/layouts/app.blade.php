@@ -18,16 +18,7 @@
 
     <livewire:components.shop-header-navigation />
 
-        <div id="mobile-menu" class="fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full w-64 bg-white transition-transform duration-300 ease-in-out z-50 shadow-2xl rounded-t-lg">
-            <div class="p-6 relative">
-                <!-- Menu Links -->
-                <div class="flex flex-col space-y-4 mt-2 text-center">
-                    <a href="/shop" class="text-gray-700 hover:text-blue-600 transition-colors duration-300">Shop</a>
-                    <a href="/cart" class="text-gray-700 hover:text-blue-600 transition-colors duration-300">Cart</a>
-                    <a href="/login" class="text-gray-700 hover:text-blue-600 transition-colors duration-300">login</a>
-                </div>
-            </div>
-        </div>
+
             <div class="toastify">
                 <livewire:components.toast />
             </div>
@@ -84,18 +75,18 @@ function toggleForms() {
     isLoginActive = !isLoginActive;
 }
 
-        // Mobile Menu Toggle
-    const menu = document.getElementById("mobile-menu");
-    const toggleButton = document.getElementById("toggle-menu");
-    const closeButton = document.getElementById("close-menu");
+    //     // Mobile Menu Toggle
+    // const menu = document.getElementById("mobile-menu");
+    // const toggleButton = document.getElementById("toggle-menu");
+    // const closeButton = document.getElementById("close-menu");
 
-    toggleButton.addEventListener("click", () => {
-        menu.classList.toggle("translate-y-full");
-    });
+    // toggleButton.addEventListener("click", () => {
+    //     menu.classList.toggle("translate-y-full");
+    // });
 
-    closeButton.addEventListener("click", () => {
-        menu.classList.add("translate-y-full");
-    });
+    // closeButton.addEventListener("click", () => {
+    //     menu.classList.add("translate-y-full");
+    // });
 
 </script>
 </html>

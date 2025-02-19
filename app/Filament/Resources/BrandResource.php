@@ -26,11 +26,30 @@ class BrandResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
+                Forms\Components\Repeater::make('brand_entries') // Rename to avoid conflicts
+                    ->schema([
+                        Forms\Components\Select::make('category_id')
+                            ->relationship('category', 'name')
+                            ->required()
+                            ->label('Category'),
+    
+                        Forms\Components\Repeater::make('brands')
+                            ->schema([
+                                Forms\Components\TextInput::make('name') // Ensure 'name' matches DB column
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->label('Brand Name'),
+                            ])
+                            ->minItems(1)
+                            ->collapsible()
+                            ->label('Brand Names'),
+                    ])
+                    ->minItems(1)
+                    ->collapsible()
+                    ->label('Categories & Brands'),
             ]);
     }
+    
 
     public static function table(Table $table): Table
     {
@@ -38,6 +57,8 @@ class BrandResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                 Tables\Columns\TextColumn::make('category.name')
+                    ->sortable(),   
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

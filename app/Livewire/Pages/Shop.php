@@ -21,21 +21,22 @@ class Shop extends Component
     public $searchQuery = '';
 
     public $categories;
-    public $brands;
+    public $availableBrands = []; // Stores brands related to selected categories
     public $cart = [];
 
     protected $queryString = ['searchQuery', 'selectedCategories', 'selectedBrands']; // Keep filters in URL
 
     public function mount()
     {
-        $this->categories = Category::all();
-        $this->brands = Brand::all();
+        $this->categories = Category::with('brands')->get();
+        $this->updateAvailableBrands();
         $this->cart = Session::get('cart', []);
     }
 
     public function updatedSelectedCategories()
     {
         $this->resetPage();
+        $this->updateAvailableBrands();
     }
 
     public function updatedSelectedBrands()
@@ -47,6 +48,21 @@ class Shop extends Component
     {
         $this->resetPage();
     }
+
+    public function updateAvailableBrands()
+    {
+        if (!empty($this->selectedCategories)) {
+            $this->availableBrands = Brand::whereHas('category', function ($query) {
+                $query->whereIn('id', $this->selectedCategories);
+            })->get();
+        } else {
+            $this->availableBrands = collect(); // Return an empty collection
+        }
+    
+        // Remove selected brands that are no longer available
+        $this->selectedBrands = array_intersect($this->selectedBrands, $this->availableBrands->pluck('id')->toArray());
+    }
+    
 
     public function getProducts()
     {
@@ -86,7 +102,7 @@ class Shop extends Component
                 'message' => 'Product liked successfully',
                 'type' => 'success'
             ]);
-        }else {
+        } else {
             return redirect(route('login'));
         }
     }
@@ -97,8 +113,10 @@ class Shop extends Component
             'products' => $this->getProducts()
         ])->layout('components.layouts.app');
     }
+
     public function resetFilters()
     {
         $this->reset('selectedCategories', 'selectedBrands', 'searchQuery');
+        $this->updateAvailableBrands();
     }
 }
