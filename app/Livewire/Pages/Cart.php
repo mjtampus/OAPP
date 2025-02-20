@@ -20,7 +20,8 @@ class Cart extends Component
     public $shipping = 9.99;
     public $total = 0;
 
-    protected $listeners = ['auth-user-cart' => 'refreshCart'];
+    protected $listeners = ['auth-user-cart' => 'refreshCart' , 
+                            'confirmedRemove' , 'clearCart'];
 
     public function mount()
     {
@@ -141,7 +142,15 @@ class Cart extends Component
         $this->refreshCart();
     }
 
+
     public function removeFromCart($productId)
+    {
+        if ($productId) {
+            $this->dispatch('openModal', 'Are you sure you want to remove it from the cart?', 'confirmedRemove', $productId);
+        }
+    }
+    
+    public function confirmedRemove($productId)
     {
         if (Auth::check()) {
             Carts::where('user_id', Auth::id())->where('sku_id', $productId)->delete();
@@ -149,6 +158,7 @@ class Cart extends Component
             $cart = collect(Session::get('cart', []))->reject(fn($item) => $item['id'] === $productId)->values()->toArray();
             Session::put('cart', $cart);
         }
+    
         $this->refreshCart();
         $this->dispatch('cart-updated');
         $this->dispatch('notify', [
@@ -157,13 +167,20 @@ class Cart extends Component
         ]);
     }
 
-    public function clearCart()
+
+    public function clearCart($confirmed = false)
     {
+        if (!$confirmed) {
+            $this->dispatch('openModal', 'Are you sure you want to clear the cart?', 'clearCart', true);
+            return;
+        }
+    
         if (Auth::check()) {
             Carts::where('user_id', Auth::id())->delete();
         } else {
             Session::forget('cart');
         }
+    
         $this->refreshCart();
         $this->dispatch('cart-updated');
         $this->dispatch('notify', [

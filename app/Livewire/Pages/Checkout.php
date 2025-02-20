@@ -2,7 +2,11 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\Carts;
 use Livewire\Component;
+use App\Models\Products;
+use App\Models\ProductsSKU;
+use Illuminate\Support\Facades\Auth;
 
 class Checkout extends Component
 {
@@ -21,6 +25,7 @@ class Checkout extends Component
     
     // Payment method
     public $paymentMethod = 'credit_card';
+    public $eWalletType = '';
     public $cardNumber;
     public $cardExpiry;
     public $cardCvv;
@@ -48,29 +53,84 @@ class Checkout extends Component
     public function mount()
     {
         // Fetch cart items from session or database
+        $this ->getUser();
         $this->loadCartItems();
         $this->calculateTotals();
+    }
+    public function getUser()
+    {
+        if (!Auth::check()) {
+            return redirect(route('login'));
+        }else{
+
+            $user = auth()->user();
+            $this->email = $user->email;
+            $this->firstName = $user->name;        }
+    }
+
+    public function incrementQuantity($cartId)
+    {   
+        $updateCart = Carts::find($cartId);
+    
+        if ($updateCart) {
+            $updateCart->increment('quantity');
+    
+            // Update only the quantity in the Livewire cartItems array
+            foreach ($this->cartItems as &$cartItem) {
+                if ($cartItem['id'] == $cartId) {
+                    $cartItem['quantity'] = $updateCart->quantity; 
+                    break;
+                }
+            }
+
+            return $this->calculateTotals();
+        }
+    }
+    public function decrementQuantity($cartId)
+    {
+        $updateCart = Carts::find($cartId);
+    
+        if ($updateCart && $updateCart->quantity > 1) {
+            $updateCart->decrement('quantity');
+    
+            // Update only the quantity in the Livewire cartItems array
+            foreach ($this->cartItems as &$cartItem) {
+                if ($cartItem['id'] == $cartId) {
+                    $cartItem['quantity'] = $updateCart->quantity; 
+                    break;
+                }
+            }
+            return $this->calculateTotals();
+        }
     }
     
     public function loadCartItems()
     {
         // Sample data - in a real app, fetch from database
-        $this->cartItems = [
-            [
-                'id' => 1,
-                'name' => 'Premium Headphones',
-                'price' => 129.99,
-                'quantity' => 1,
-                'image' => '/images/headphones.jpg'
-            ],
-            [
-                'id' => 2,
-                'name' => 'Wireless Charger',
-                'price' => 45.50,
-                'quantity' => 2,
-                'image' => '/images/charger.jpg'
-            ],
-        ];
+        $this->cartItems = [];
+        
+        $carts = auth()->user()->carts()->get();
+
+        if ($carts->isEmpty()) {
+            return $this->cartItems = [];
+        }
+
+        foreach ($carts as $cart) {
+            $product = Products::find($cart->products_id);
+            $sku = ProductsSKU::find($cart->sku_id);
+
+            $this->cartItems[] = [
+                'id' => $cart->id,
+                'pproduct_id' => $cart->products_id,
+                'sku_id' => $cart-> sku_id,
+                'price' => $sku->price,
+                'image' => $sku->sku_image_dir,
+                'name' => $product->name,
+                'quantity' => $cart->quantity,
+            ];
+        }
+
+
     }
     
     public function calculateTotals()

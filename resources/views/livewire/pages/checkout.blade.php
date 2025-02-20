@@ -17,9 +17,9 @@
                                 <div class="flex items-start justify-between p-6 transition hover:bg-gray-50">
                                     <div class="flex items-center">
                                         <div class="relative">
-                                            <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-20 h-20 object-cover rounded-lg shadow-sm">
+                                            <img src="{{Storage::url($item['image'])}}"  alt="{{ $item['name'] }}" class="w-20 h-20 object-cover rounded-lg shadow-sm">
                                             <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
-                                                {{ $item['quantity'] }}
+                                                {{ $item['quantity'] }} 
                                             </span>
                                         </div>
                                         <div class="ml-4">
@@ -93,7 +93,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <p class="text-gray-600 mb-4">Your cart is empty.</p>
-                            <a href="{{ route('products') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <a href="{{ route('shop') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Continue shopping
                             </a>
                         </div>
@@ -247,36 +247,76 @@
                                         </div>
                                         
                                         <div class="relative flex items-center p-4 border rounded-lg transition-all" 
-                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'paypal', 'border-gray-200': paymentMethod !== 'paypal' }"
+                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'COD', 'border-gray-200': paymentMethod !== 'E_wallet' }"
                                             x-data>
-                                            <input id="paypal" type="radio" value="paypal" wire:model="paymentMethod" 
-                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'paypal')">
-                                            <label for="paypal" class="ml-3 flex items-center cursor-pointer w-full">
+                                            <input id="E_wallet" type="radio" value="E_wallet" wire:model="paymentMethod" 
+                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'E_wallet')">
+                                            <label for="E_wallet" class="ml-3 flex items-center cursor-pointer w-full">
                                                 <div class="flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
                                                     </svg>
-                                                    <span class="text-sm font-medium text-gray-700">PayPal</span>
+                                                    <span class="text-sm font-medium text-gray-700">E wallet</span>
                                                 </div>
                                             </label>
                                         </div>
                                         
                                         <div class="relative flex items-center p-4 border rounded-lg transition-all" 
-                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'bank_transfer', 'border-gray-200': paymentMethod !== 'bank_transfer' }"
+                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'COD', 'border-gray-200': paymentMethod !== 'COD' }"
                                             x-data>
-                                            <input id="bank_transfer" type="radio" value="bank_transfer" wire:model="paymentMethod" 
-                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'bank_transfer')">
-                                            <label for="bank_transfer" class="ml-3 flex items-center cursor-pointer w-full">
+                                            <input id="COD" type="radio" value="COD" wire:model="paymentMethod" 
+                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'COD')">
+                                            <label for="COD" class="ml-3 flex items-center cursor-pointer w-full">
                                                 <div class="flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
                                                     </svg>
-                                                    <span class="text-sm font-medium text-gray-700">Bank Transfer</span>
+                                                    <span class="text-sm font-medium text-gray-700">Cash on Delivery</span>
                                                 </div>
                                             </label>
                                         </div>
                                     </div>
-                                    
+
+                                    @if($paymentMethod === 'E_wallet')
+                                    <div class="mb-6 ml-12 space-y-4" x-data="{ eWalletType: '' }">
+                                        <h4 class="text-sm font-medium text-gray-700 mb-3">Select E-Wallet Provider</h4>
+                                        
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="relative rounded-lg border p-4 transition-all cursor-pointer"
+                                                :class="{ 'border-blue-500 bg-green-50': eWalletType === 'gcash', 'border-gray-200 hover:border-blue-200 hover:bg-blue-50': eWalletType !== 'gcash' }"
+                                                x-on:click="eWalletType = 'gcash'; $wire.set('eWalletType', 'gcash')">
+                                                <input type="radio" id="gcash" name="eWalletType" value="gcash" wire:model="eWalletType" class="sr-only">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/GCash_logo.svg" alt="GCash" class="h-12 mb-2">
+                                                    <span class="text-sm font-medium">GCash</span>
+                                                    
+                                                    <div x-show="eWalletType === 'gcash'" class="absolute top-2 right-2 text-blue-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="relative rounded-lg border p-4 transition-all cursor-pointer"
+                                                :class="{ 'border-green-500 bg-blue-50': eWalletType === 'maya', 'border-gray-200 hover:border-blue-200 hover:bg-blue-50': eWalletType !== 'maya' }"
+                                                x-on:click="eWalletType = 'maya'; $wire.set('eWalletType', 'maya')">
+                                                <input type="radio" id="maya" name="eWalletType" value="maya" wire:model="eWalletType" class="sr-only">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Maya_logo.svg" alt="Maya" class="h-12 mb-2">
+                                                    <span class="text-sm font-medium">Maya</span>
+                                                    
+                                                    <div x-show="eWalletType === 'maya'" class="absolute top-2 right-2 text-green-500">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                @endif
+
                                     @if($paymentMethod === 'credit_card')
                                         <div class="mt-6 space-y-4">
                                             <div>

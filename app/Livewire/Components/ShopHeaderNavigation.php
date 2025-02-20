@@ -11,7 +11,8 @@ class ShopHeaderNavigation extends Component
 {
     public $cartCount = 0;
 
-    protected $listeners = ['cart-updated' => 'updateCartCount'];
+    protected $listeners = ['cart-updated' => 'updateCartCount',
+                            'logout'];
 
     public function mount()
     {
@@ -27,8 +28,12 @@ class ShopHeaderNavigation extends Component
         }
 
     }
-    public function logout()
+    public function logout($comfirmed = false)
     {
+        if (!$comfirmed) {
+            $this->dispatch('openModal', 'Are you sure you want to logout?', 'logout', true);
+            return;
+        }
         Auth::logout();
 
         return redirect(route('login'));

@@ -43,9 +43,9 @@
                      class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                     <a href="/account" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">My Account</a>
                     <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Orders</a>
-                    <button wire:click.prevent="logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600" wire:loading.attr="disabled">
+                    <a wire:click.prevent="logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600" wire:loading.attr="disabled">
                         Logout
-                    </button>
+                    </a>
                 </div>
             </div>
             @else

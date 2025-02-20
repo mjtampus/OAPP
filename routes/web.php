@@ -27,7 +27,7 @@ Route::get('/',HomePage::class)->lazy()->name('home');
 Route::get('/shop',Shop::class)->lazy()->name('shop');
 Route::get('/cart',Cart::class)->lazy();
 Route::get('/login',Login::class)->lazy()->name('login');
-Route::get('/checkout' ,Checkout::class)->name('checkout'); 
+Route::get('/checkout' ,Checkout::class)->name('checkout')->middleware('auth'); 
 Route::get('/product/{productId}', ProductDetails::class)->name('product.details');
 
 
