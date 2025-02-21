@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\Products;
 use App\Models\ProductsSKU;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class Checkout extends Component
 {
@@ -106,32 +107,34 @@ class Checkout extends Component
     
     public function loadCartItems()
     {
-        // Sample data - in a real app, fetch from database
+        // Initialize cart items
         $this->cartItems = [];
-        
-        $carts = auth()->user()->carts()->get();
-
-        if ($carts->isEmpty()) {
-            return $this->cartItems = [];
-        }
-
-        foreach ($carts as $cart) {
-            $product = Products::find($cart->products_id);
-            $sku = ProductsSKU::find($cart->sku_id);
-
+    
+        // Retrieve cart session data
+        $cartCheckout = Session::get('cart-checkout', []);
+    
+        foreach ($cartCheckout as $cart) {
+            // Find product and SKU from database
+            $product = Products::find($cart['product_id']);
+            $sku = ProductsSKU::find($cart['id']); // Assuming 'id' is the SKU ID
+    
+            if (!$product || !$sku) {
+                continue; // Skip if not found
+            }
+    
+            // Store cart details
             $this->cartItems[] = [
-                'id' => $cart->id,
-                'pproduct_id' => $cart->products_id,
-                'sku_id' => $cart-> sku_id,
+                'id' => $cart['id'], // SKU ID
+                'product_id' => $cart['product_id'],
+                'sku_id' => $cart['id'],
                 'price' => $sku->price,
                 'image' => $sku->sku_image_dir,
                 'name' => $product->name,
-                'quantity' => $cart->quantity,
+                'quantity' => $cart['quantity'] ?? 1, // Default to 1 if not set
             ];
-        }
-
-
+        }    
     }
+    
     
     public function calculateTotals()
     {
@@ -156,14 +159,29 @@ class Checkout extends Component
             $this->calculateTotals();
         }
     }
-    
     public function removeItem($itemId)
-    {
-        $this->cartItems = array_filter($this->cartItems, function ($item) use ($itemId) {
-            return $item['id'] != $itemId;
-        });
-        $this->calculateTotals();
-    }
+{
+    // Get the current cart from session
+    $cartCheckout = Session::get('cart-checkout', []);
+
+    // Filter out the item with the given ID
+    $updatedCart = array_filter($cartCheckout, function ($item) use ($itemId) {
+        return $item['id'] != $itemId; // Keep items that don't match the given ID
+    });
+
+    // Reindex the array (optional)
+    $updatedCart = array_values($updatedCart);
+
+    // Store the updated cart back in session
+    Session::put('cart-checkout', $updatedCart);
+
+    // Update local Livewire cart state
+    $this->cartItems = $updatedCart;
+
+    // Recalculate totals if needed
+    $this->calculateTotals();
+}
+
     
     public function placeOrder()
     {

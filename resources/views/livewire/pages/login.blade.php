@@ -1,5 +1,5 @@
-<div class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
-    <div class="w-[900px] bg-white shadow-2xl rounded-xl overflow-hidden">
+<div class="bg-gray-50 flex items-center justify-center min-h-screen py-8">
+    <div class="w-full max-w-4xl bg-white shadow-xl rounded-2xl overflow-hidden">
         <div class="flex flex-col md:flex-row relative">
             <!-- Login/Register Container -->
             <div class="w-full md:w-1/2 transition-all duration-500 ease-in-out">
@@ -22,13 +22,13 @@
                     </div>
 
                     <!-- Login Form -->
-                    <div x-show="activeTab === 'login'" class="p-8" x-transition>
+                    <div x-show="activeTab === 'login'" class="p-8" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
                         <div class="mb-8 text-center">
                             <h2 class="text-2xl font-bold text-gray-800">Welcome Back!</h2>
                             <p class="text-gray-600 mt-1">Login to your account</p>
                         </div>
                         
-                        <form wire:submit.prevent="login" class="space-y-4">
+                        <form wire:submit.prevent="login" class="space-y-5">
                             <div>
                                 <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
                                 <div class="relative">
@@ -42,17 +42,19 @@
                                         id="login-email"
                                         type="email" 
                                         wire:model.defer="email" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="your@email.com"
                                         required
                                     >
                                 </div>
-                                @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <div class="mt-1 h-5">
+                                    @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
                             <div>
                                 <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <div class="relative">
+                                <div class="relative" x-data="{ showPassword: false }">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
@@ -60,14 +62,29 @@
                                     </div>
                                     <input 
                                         id="login-password"
-                                        type="password" 
+                                        :type="showPassword ? 'text' : 'password'" 
                                         wire:model.defer="password" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 pr-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="••••••••"
                                         required
                                     >
+                                    <button 
+                                        type="button" 
+                                        @click="showPassword = !showPassword" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <svg x-show="!showPassword" class="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <svg x-show="showPassword" class="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <div class="mt-1 h-5">
+                                    @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
                             <div class="flex items-center justify-between">
@@ -93,11 +110,18 @@
                                     Processing...
                                 </div>
                             </button>
+                            
+                            <div class="text-center mt-4">
+                                <p class="text-sm text-gray-600">
+                                    Don't have an account? 
+                                    <button type="button" @click="activeTab = 'register'" class="text-blue-600 hover:underline">Create one now</button>
+                                </p>
+                            </div>
                         </form>
                     </div>
 
                     <!-- Register Form -->
-                    <div x-show="activeTab === 'register'" class="p-8" x-transition>
+                    <div x-show="activeTab === 'register'" class="p-8" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform scale-95" x-transition:enter-end="opacity-100 transform scale-100">
                         <div class="mb-6 text-center">
                             <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
                             <p class="text-gray-600 mt-1">Join our community today</p>
@@ -116,12 +140,14 @@
                                         id="name"
                                         type="text" 
                                         wire:model.defer="name" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="John Doe"
                                         required
                                     >
                                 </div>
-                                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <div class="mt-1 h-5">
+                                    @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
                             <div>
@@ -137,17 +163,19 @@
                                         id="register-email"
                                         type="email" 
                                         wire:model.defer="email" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="your@email.com"
                                         required
                                     >
                                 </div>
-                                @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <div class="mt-1 h-5">
+                                    @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
                             <div>
                                 <label for="register-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                                <div class="relative">
+                                <div class="relative" x-data="{ showPassword: false }">
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
@@ -155,14 +183,29 @@
                                     </div>
                                     <input 
                                         id="register-password"
-                                        type="password" 
+                                        :type="showPassword ? 'text' : 'password'" 
                                         wire:model.defer="password" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 pr-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="••••••••"
                                         required
                                     >
+                                    <button 
+                                        type="button" 
+                                        @click="showPassword = !showPassword" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    >
+                                        <svg x-show="!showPassword" class="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        <svg x-show="showPassword" class="h-5 w-5" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                        </svg>
+                                    </button>
                                 </div>
-                                @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <div class="mt-1 h-5">
+                                    @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
                             <div>
@@ -177,11 +220,12 @@
                                         id="password_confirmation"
                                         type="password" 
                                         wire:model.defer="password_confirmation" 
-                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        class="pl-10 w-full py-3 px-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 transition-colors"
                                         placeholder="••••••••"
                                         required
                                     >
                                 </div>
+                                <div class="mt-1 h-5"></div>
                             </div>
                             
                             <div class="flex items-center">
@@ -190,7 +234,9 @@
                                     I agree to the <a href="#" class="text-blue-600 hover:underline">Terms</a> and <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
                                 </label>
                             </div>
-                            @error('terms') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            <div class="h-5">
+                                @error('terms') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
                             
                             <button 
                                 type="submit" 
@@ -207,55 +253,99 @@
                                     Processing...
                                 </div>
                             </button>
+                            
+                            <div class="text-center mt-4">
+                                <p class="text-sm text-gray-600">
+                                    Already have an account? 
+                                    <button type="button" @click="activeTab = 'login'" class="text-blue-600 hover:underline">Sign in</button>
+                                </p>
+                            </div>
                         </form>
                     </div>
 
                     <!-- Status Messages -->
                     <div class="px-8 pb-6">
-                        @if (session()->has('success'))
-                            <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg">
-                                {{ session('success') }}
+                        <div x-data="{ show: false, message: '', type: '' }" 
+                             x-show="show" 
+                             x-init="
+                                @this.on('success', (message) => {
+                                    show = true;
+                                    type = 'success';
+                                    message = message;
+                                    setTimeout(() => { show = false }, 5000);
+                                });
+                                @this.on('error', (message) => {
+                                    show = true;
+                                    type = 'error';
+                                    message = message;
+                                    setTimeout(() => { show = false }, 5000);
+                                });
+                             "
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform -translate-y-2"
+                             x-transition:enter-end="opacity-100 transform translate-y-0"
+                             x-transition:leave="transition ease-in duration-300"
+                             x-transition:leave-start="opacity-100 transform translate-y-0"
+                             x-transition:leave-end="opacity-0 transform -translate-y-2"
+                             class="relative"
+                        >
+                            <div :class="{'bg-green-100 text-green-700': type === 'success', 'bg-red-100 text-red-700': type === 'error'}" 
+                                 class="p-4 rounded-lg flex items-start">
+                                <div class="flex-shrink-0 mr-3" :class="{'text-green-500': type === 'success', 'text-red-500': type === 'error'}">
+                                    <svg x-show="type === 'success'" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <svg x-show="type === 'error'" class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="text-sm" x-text="message"></div>
+                                <button @click="show = false" class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 focus:ring-gray-400 p-1.5 hover:bg-gray-200 inline-flex h-8 w-8 items-center justify-center" :class="{'text-green-700': type === 'success', 'text-red-700': type === 'error'}">
+                                    <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
                             </div>
-                        @endif
-                        
-                        @if (session()->has('error'))
-                            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg">
-                                {{ session('error') }}
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Image Section -->
-            <div class="hidden md:block md:w-1/2 bg-cover bg-center h-full" style="background-image: url('https://picsum.photos/450/700')">
-                <div class="h-full w-full bg-gradient-to-r from-blue-900/70 to-indigo-900/60 flex flex-col justify-center px-12 text-white">
-                    <h3 class="text-3xl font-bold mb-4">Start Your Journey</h3>
-                    <p class="text-lg mb-8">Access your account dashboard and manage all your activities in one place.</p>
-                    <div class="space-y-4">
-                        <div class="flex items-center">
-                            <div class="bg-white/20 p-2 rounded-full">
-                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
+ <!-- Image Section -->
+                <div class="w-full md:w-1/2 bg-cover bg-center min-h-[300px] md:min-h-[500px] relative flex items-center justify-center"
+                style="background-image: url('https://picsum.photos/1080/720')">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-indigo-900/70"></div>
+                    <div class="relative z-10 flex flex-col items-center text-center px-12 text-white">
+                        <h3 class="text-3xl font-bold mb-4">Start Your Journey</h3>
+                        <p class="text-lg mb-6">Access your account dashboard and manage all your activities in one place.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/20 p-3 rounded-full">
+                                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span>Secure account management</span>
                             </div>
-                            <span class="ml-4">Secure account management</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="bg-white/20 p-2 rounded-full">
-                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
+
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/20 p-3 rounded-full">
+                                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span>Real-time data analytics</span>
                             </div>
-                            <span class="ml-4">Real-time data analytics</span>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="bg-white/20 p-2 rounded-full">
-                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
+
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white/20 p-3 rounded-full">
+                                    <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <span>Premium support 24/7</span>
                             </div>
-                            <span class="ml-4">Premium support 24/7</span>
                         </div>
                     </div>
                 </div>
@@ -263,64 +353,3 @@
         </div>
     </div>
 </div>
-
-<!-- Alpine.js for tab switching (required) -->
-<script>
-    document.addEventListener('alpine:init', () => {
-        // Alpine is already initialized
-    });
-</script>
-
-<!-- Livewire Component Script -->
-<script>
-    // This would be in your Livewire component
-    class AuthComponent extends Livewire.Component {
-        name = '';
-        email = '';
-        password = '';
-        password_confirmation = '';
-        remember = false;
-        terms = false;
-        
-        login() {
-            this.validate({
-                email: 'required|email',
-                password: 'required|min:8',
-            });
-            
-            // Simulate login process with delay
-            this.$wire.loading = true;
-            setTimeout(() => {
-                // Your actual login logic would go here
-                if (this.email === 'test@example.com' && this.password === 'password') {
-                    this.$wire.emit('success', 'Successfully logged in!');
-                    // Redirect after login
-                    // window.location.href = '/dashboard';
-                } else {
-                    this.$wire.emit('error', 'Invalid credentials. Please try again.');
-                }
-                this.$wire.loading = false;
-            }, 1500);
-        }
-        
-        register() {
-            this.validate({
-                name: 'required|min:3',
-                email: 'required|email',
-                password: 'required|min:8|same:password_confirmation',
-                terms: 'accepted',
-            });
-            
-            // Simulate registration process with delay
-            this.$wire.loading = true;
-            setTimeout(() => {
-                // Your actual registration logic would go here
-                this.$wire.emit('success', 'Account created successfully! Please check your email to verify your account.');
-                this.$wire.loading = false;
-            }, 1500);
-        }
-    }
-    
-    // Registration would be in your app.js or similar file
-    Livewire.component('auth-component', AuthComponent);
-</script>

@@ -22,7 +22,6 @@ class AlertModal extends Component
         // dd($message, $callback, $callbackData);
         $this->showModal = true;
 
-        
     }
 
     public function confirm()
