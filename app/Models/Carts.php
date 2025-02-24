@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\OrderItems;
 use Illuminate\Database\Eloquent\Model;
 
 class Carts extends Model
@@ -26,5 +27,10 @@ class Carts extends Model
     public function products()
     {
         return $this->belongsToMany(Products::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItems::class);
     }
 }

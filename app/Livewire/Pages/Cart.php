@@ -63,6 +63,7 @@ class Cart extends Component
                 $values = ProductsAttributesValues::whereIn('id', $valuesIds)->pluck('value')->toArray();
                 return [
                     'id' => $sku->id,
+                    'cart_id' => $cartItem->id,
                     'name' => $product->name,
                     'product_id' => $product->id,
                     'description' => $product->description,
@@ -73,7 +74,6 @@ class Cart extends Component
                     'quantity' => $cartItem->quantity ?? 1
                 ];
             });
-
             $this->calculateTotals();
         } else {
             $this->cartProducts = [];

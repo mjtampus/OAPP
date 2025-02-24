@@ -3,8 +3,10 @@
 namespace App\Livewire\Pages;
 
 use App\Models\Carts;
+use App\Models\Order;
 use Livewire\Component;
 use App\Models\Products;
+use App\Models\OrderItems;
 use App\Models\ProductsSKU;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -78,7 +80,7 @@ class Checkout extends Component
     
             // Update only the quantity in the Livewire cartItems array
             foreach ($this->cartItems as &$cartItem) {
-                if ($cartItem['id'] == $cartId) {
+                if ($cartItem['sku_id'] == $cartId) {
                     $cartItem['quantity'] = $updateCart->quantity; 
                     break;
                 }
@@ -96,7 +98,7 @@ class Checkout extends Component
     
             // Update only the quantity in the Livewire cartItems array
             foreach ($this->cartItems as &$cartItem) {
-                if ($cartItem['id'] == $cartId) {
+                if ($cartItem['sku_id'] == $cartId) {
                     $cartItem['quantity'] = $updateCart->quantity; 
                     break;
                 }
@@ -124,7 +126,8 @@ class Checkout extends Component
     
             // Store cart details
             $this->cartItems[] = [
-                'id' => $cart['id'], // SKU ID
+                'id' => $cart['id'],
+                'cart_id' => $cart['cart_id'], // SKU ID
                 'product_id' => $cart['product_id'],
                 'sku_id' => $cart['id'],
                 'price' => $sku->price,
@@ -151,7 +154,7 @@ class Checkout extends Component
     {
         if ($newQuantity > 0) {
             foreach ($this->cartItems as $index => $item) {
-                if ($item['id'] == $itemId) {
+                if ($item['sku_id'] == $itemId) {
                     $this->cartItems[$index]['quantity'] = $newQuantity;
                     break;
                 }
@@ -166,7 +169,7 @@ class Checkout extends Component
 
     // Filter out the item with the given ID
     $updatedCart = array_filter($cartCheckout, function ($item) use ($itemId) {
-        return $item['id'] != $itemId; // Keep items that don't match the given ID
+        return $item['sku_id'] != $itemId; // Keep items that don't match the given ID
     });
 
     // Reindex the array (optional)
@@ -183,19 +186,47 @@ class Checkout extends Component
 }
 
     
-    public function placeOrder()
-    {
-        $this->validate();
-        
-        // Process the order (simplified)
-        $orderId = rand(10000, 99999);
-        
-        // In a real app, you would save to database
-        session()->flash('order_completed', true);
-        session()->flash('order_id', $orderId);
-        
-        return redirect()->route('checkout.confirmation');
+public function placeOrder()
+{
+    $this->validate();
+
+    if (empty($this->cartItems)) {
+        return redirect()->back()->with('error', 'Your cart is empty.');
     }
+
+    $totalAmount = collect($this->cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
+
+    $order = Order::create([
+        'user_id' => auth()->user()->id,
+        'amount' => $totalAmount,
+        'payment_method' => $this->eWalletType ?? $this->paymentMethod,
+        'order_status' => 'pending'
+    ]);
+
+    foreach ($this->cartItems as $item) {
+        OrderItems::create([
+            'order_id' => $order->id,
+            'cart_id' => $item['cart_id'],
+            'product_id' => $item['product_id'],
+            'sku_id' => $item['sku_id'],
+            'quantity' => $item['quantity'],
+            'price' => $item['price'],
+            'total_price' => $this->total,
+        ]);
+    }
+
+    // Determine Payment Gateway
+    $gateway = match ($this->paymentMethod) {
+        'credit_card' => 'stripe',
+        'E_wallet' => 'paymongo',
+        default => 'COD',
+    };
+
+    return redirect()->route('payment', ['id' => $order->id, 'gateway' => $gateway]);
+}
+
+
+
     public function render()
     {
         return view('livewire.pages.checkout');

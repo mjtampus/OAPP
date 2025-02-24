@@ -31,7 +31,7 @@
                                     <div class="flex items-center space-x-4">
                                         <div class="flex items-center">
                                             <button 
-                                                wire:click="decrementQuantity({{ $item['id'] }})" 
+                                                wire:click="decrementQuantity({{ $item['sku_id'] }})" 
                                                 class="w-8 h-8 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-100"
                                                 {{ $item['quantity'] <= 1 ? 'disabled' : '' }}
                                             >
@@ -43,7 +43,7 @@
                                             <span class="w-10 text-center text-gray-800">{{ $item['quantity'] }}</span>
                                             
                                             <button 
-                                                wire:click="incrementQuantity({{ $item['id'] }})" 
+                                                wire:click="incrementQuantity({{ $item['sku_id'] }})" 
                                                 class="w-8 h-8 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-100"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,7 +53,7 @@
                                         </div>
                                         
                                         <button 
-                                            wire:click="removeItem({{ $item['id'] }})"
+                                            wire:click="removeItem({{ $item['sku_id'] }})"
                                             wire:loading.attr="disabled"
                                             class="text-red-500 hover:text-red-700 transition"
                                         >
@@ -287,8 +287,8 @@
                                                 <span class="text-sm font-medium">GCash</span>
                                             </div>
                                             <div class="relative rounded-lg border p-4 transition-all cursor-pointer"
-                                                :class="{ 'border-green-500 bg-blue-50': $wire.eWalletType === 'maya' }"
-                                                x-on:click="$wire.set('eWalletType', 'maya')">
+                                                :class="{ 'border-green-500 bg-blue-50': $wire.eWalletType === 'paymaya' }"
+                                                x-on:click="$wire.set('eWalletType', 'paymaya')">
                                                 <span class="text-sm font-medium">Maya</span>
                                             </div>
                                         </div>

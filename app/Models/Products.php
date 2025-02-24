@@ -50,4 +50,10 @@ class Products extends Model
     {
         return $this->hasMany(Carts::class);
     }
+
+    public function items() :HasMany
+    {
+        return $this->hasMany(OrderItems::class);
+    }
+    
 }

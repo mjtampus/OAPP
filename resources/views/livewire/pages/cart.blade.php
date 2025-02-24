@@ -59,7 +59,7 @@
                             
                             @foreach($cartProducts as $product)
                                 <div x-data="{ checked: false }" 
-                                @click="checked = !checked; $refs.checkbox.click()" 
+                                @click="if (!$event.target.closest('button')) { checked = !checked; $refs.checkbox.click(); }" 
                                   class="group bg-white rounded-2xl p-6 transition-all duration-300 hover:shadow-xl border border-gray-100 hover:border-indigo-100 relative overflow-hidden">
                                     <!-- Decorative pattern -->
                                     <input type="checkbox"

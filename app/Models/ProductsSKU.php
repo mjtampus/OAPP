@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Carts;
 use App\Models\Products;
+use App\Models\OrderItems;
 use App\Models\ProductsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductsAttributesValues;
@@ -26,8 +27,6 @@ class ProductsSKU extends Model
     ];
     
 
-
-
 public function product() :BelongsTo
 {
     return $this->belongsTo(Products::class,'products_id');
@@ -47,6 +46,10 @@ public function carts() :HasMany
     return $this->hasMany(Carts::class);
 }
 
+public function items() :HasMany
+{
+    return $this->hasMany(OrderItems::class);
+}
 }
 
 
