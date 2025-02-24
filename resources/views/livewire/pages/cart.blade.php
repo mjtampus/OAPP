@@ -22,10 +22,9 @@
 
             <!-- Loading Indicator - Improved with more subtle blur and animation -->
             <div 
-                wire:loading
-                wire:target="removeFromCart, incrementQuantity, decrementQuantity"
-                class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-            >
+            class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50 z-50 flex"
+            wire:loading.class.remove="hidden"
+        >
                 <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full border border-indigo-50 flex flex-col items-center">
                     <div class="w-16 h-16 relative flex items-center justify-center">
                         <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
@@ -59,12 +58,16 @@
 
                             
                             @foreach($cartProducts as $product)
-                                <div class="group bg-white rounded-2xl p-6 transition-all duration-300 hover:shadow-xl border border-gray-100 hover:border-indigo-100 relative overflow-hidden">
+                                <div x-data="{ checked: false }" 
+                                @click="checked = !checked; $refs.checkbox.click()" 
+                                  class="group bg-white rounded-2xl p-6 transition-all duration-300 hover:shadow-xl border border-gray-100 hover:border-indigo-100 relative overflow-hidden">
                                     <!-- Decorative pattern -->
-                                    <input type="checkbox" 
+                                    <input type="checkbox"
+                                        x-ref="checkbox" x-model="checked"  
                                         wire:model.live="selectedProducts" 
                                         value="{{ $product['id'] }}" 
-                                        class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                        class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                        @click.stop>
                                     <div class="absolute -right-16 -top-16 w-32 h-32 bg-gradient-to-br from-violet-100 to-transparent rounded-full opacity-0 group-hover:opacity-70 transition-all duration-500 transform scale-0 group-hover:scale-100"></div>
                                     
                                     <div class="flex gap-6 relative">
@@ -78,12 +81,12 @@
                                         
                                         <div class="flex-1 flex flex-col justify-between">
                                             <div>
-                                                <h3 class="text-lg font-semibold text-gray-900 group-hover:text-violet-700 transition-colors duration-300">
-                                                    {{ $product['name'] }} 
-                                                    <span class ="text-sm text-gray-500">{{$product['variant'] }}</span>
-                                                </h3>
+                                                <h3 class="text-lg text-gray-900 group-hover:text-violet-700 transition-colors duration-300">
+                                                    <span class="font-bold">{{ $product['name'] }}</span> 
+                                                    <span class="text-sm font-semibold text-gray-500">{{ $product['variant'] }}</span>
+                                                </h3>                                                
                                                 <p class="text-xs text-gray-500 mt-2 leading-relaxed">
-                                                    {!! $product['description'] !!}
+                                                    {!! Str::limit($product['description'] , 200)  !!}
                                                 </p>
                                             </div>
                                             

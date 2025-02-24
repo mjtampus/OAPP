@@ -23,14 +23,21 @@
     </div>
     
     <div class="flex-grow relative">
-        <!-- Page Content -->
-        {{ $slot }}
+        <div x-data="{ loading: false }"
+        x-on:wire-navigate-start.window="loading = true"
+        x-on:wire-navigate-end.window="loading = false">
+   
+       <!-- Loading Overlay -->
+       <div x-show="loading" class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-50">
+           <div class="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+       </div>
+   
+       <!-- Main Page Content -->
+       {{ $slot }}
+   </div>
+   
     </div>
 
-    <div wire:loading class="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
-        <div class="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-    </div>
-    
     <div class="alert-modal" >
         <livewire:components.alertModal />
     </div>
@@ -48,26 +55,5 @@
     
     @livewireScripts
     
-    <script>
-        let isLoginActive = true;
-
-        function toggleForms() {
-            const loginForm = document.getElementById("login-form");
-            const registerForm = document.getElementById("register-form");
-            const imageSection = document.getElementById("image-section");
-
-            if (isLoginActive) {
-                registerForm.style.right = "0";
-                loginForm.style.transform = "translateX(-100%)";
-                imageSection.style.transform = "translateX(-100%)";
-            } else {
-                registerForm.style.right = "-100%";
-                loginForm.style.transform = "translateX(0)";
-                imageSection.style.transform = "translateX(0)";
-            }
-
-            isLoginActive = !isLoginActive;
-        }
-    </script>
 </body>
 </html>

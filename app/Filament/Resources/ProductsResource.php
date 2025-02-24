@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Products;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -90,14 +92,22 @@ class ProductsResource extends Resource
                                 ->label('stock')
                                 ->required()
                                 ->numeric(),
-                            Select::make('brand_id')
+                                Select::make('brand_id')
                                 ->label('Brand')
                                 ->relationship('brand', 'name')
-                                ->required(),
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(fn (callable $set, $state) => 
+                                    $set('category_id', \App\Models\Brand::where('id', $state)->value('category_id'))
+                                ),
+                            
                             Select::make('category_id')
                                 ->label('Category')
                                 ->relationship('category', 'name')
-                                ->required(),
+                                ->required()
+                                ->disabled() // Makes it readonly
+                                ->dehydrated(), // Ensures it is saved to the database
+                            
                         Section::make('Product Status')
                                 ->schema([
                                     Toggle::make('is_new_arrival')

@@ -87,15 +87,20 @@ class Cart extends Component
 
         if (!empty($cart)) {
             $cartIds = collect($cart)->pluck('id')->toArray();
+            $cartItems = collect($cart); // Define cartItems from the session data
+        
             $productSkus = ProductsSKU::whereIn('id', $cartIds)->get();
-
+        
             $this->cartProducts = $productSkus->map(function ($sku) use ($cartItems) {
-                $cartItem = $cartItems->firstWhere('sku_id', $sku->id);
+                $cartItem = $cartItems->firstWhere('id', $sku->id); // Use 'id' to match cart item
                 $product = Products::find($sku->products_id);
+        
                 $valuesIds = is_array($sku->attributes)
-                ? array_map(fn($attr) => $attr[1] ?? null, $sku->attributes)
-                : [];
+                    ? array_map(fn($attr) => $attr[1] ?? null, $sku->attributes)
+                    : [];
+        
                 $values = ProductsAttributesValues::whereIn('id', $valuesIds)->pluck('value')->toArray();
+        
                 return [
                     'id' => $sku->id,
                     'name' => $product->name,
@@ -105,15 +110,16 @@ class Cart extends Component
                     'variant' => implode(' | ', $values),
                     'image' => $sku->sku_image_dir,
                     'price' => $sku->price,
-                    'quantity' => $cartItem->quantity ?? 1
+                    'quantity' => $cartItem['quantity'] ?? 1 // Fix: Use array syntax
                 ];
             });
-
+        
             $this->calculateTotals();
         } else {
             $this->cartProducts = [];
             $this->resetTotals();
         }
+        
     }
 
     public function incrementQuantity($productId)
@@ -233,8 +239,6 @@ class Cart extends Component
         $this->calculateTotals();
     }
     
-    
-
     private function calculateTotals()
     {
         // Get only selected products from $cartProducts
