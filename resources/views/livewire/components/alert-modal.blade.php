@@ -93,4 +93,14 @@
         </div>
     </div>
     @endif
+    <div  wire:loading.class.remove="hidden" wire:target="confirm" class="fixed hidden inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-md">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col items-center justify-center text-center w-64">
+            <svg class="w-12 h-12 animate-spin text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 2v4m0 12v4m8-8h-4m-12 0H2m18.364-6.364l-2.828 2.828M6.364 17.636l-2.828 2.828m14.142 0l2.828-2.828M6.364 6.364L3.536 3.536" />
+            </svg>
+            <p class="mt-3 text-gray-700 dark:text-gray-300">Processing...</p>
+        </div>
+    </div>
+    
+</div>
 </div>

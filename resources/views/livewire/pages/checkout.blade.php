@@ -227,15 +227,15 @@
                                 </div>
                                 
                                 <!-- Payment Method Section -->
-                                <div>
+                                <div x-data="{ paymentMethod: @entangle('paymentMethod') }">
                                     <h3 class="text-lg font-medium text-gray-900 mb-4">Payment Method</h3>
                                     
                                     <div class="mb-4 space-y-3">
+                                        <!-- Credit Card Option -->
                                         <div class="relative flex items-center p-4 border rounded-lg transition-all" 
-                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'credit_card', 'border-gray-200': paymentMethod !== 'credit_card' }"
-                                            x-data>
+                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'credit_card', 'border-gray-200': paymentMethod !== 'credit_card' }">
                                             <input id="credit_card" type="radio" value="credit_card" wire:model="paymentMethod" 
-                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'credit_card')">
+                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                             <label for="credit_card" class="ml-3 flex items-center cursor-pointer w-full">
                                                 <div class="flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,12 +245,12 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        
+                                
+                                        <!-- E-Wallet Option -->
                                         <div class="relative flex items-center p-4 border rounded-lg transition-all" 
-                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'COD', 'border-gray-200': paymentMethod !== 'E_wallet' }"
-                                            x-data>
+                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'E_wallet', 'border-gray-200': paymentMethod !== 'E_wallet' }">
                                             <input id="E_wallet" type="radio" value="E_wallet" wire:model="paymentMethod" 
-                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'E_wallet')">
+                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                             <label for="E_wallet" class="ml-3 flex items-center cursor-pointer w-full">
                                                 <div class="flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -260,12 +260,12 @@
                                                 </div>
                                             </label>
                                         </div>
-                                        
+                                
+                                        <!-- Cash on Delivery Option -->
                                         <div class="relative flex items-center p-4 border rounded-lg transition-all" 
-                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'COD', 'border-gray-200': paymentMethod !== 'COD' }"
-                                            x-data>
+                                            :class="{ 'border-blue-500 bg-blue-50': paymentMethod === 'COD', 'border-gray-200': paymentMethod !== 'COD' }">
                                             <input id="COD" type="radio" value="COD" wire:model="paymentMethod" 
-                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" x-on:click="$wire.set('paymentMethod', 'COD')">
+                                                class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                             <label for="COD" class="ml-3 flex items-center cursor-pointer w-full">
                                                 <div class="flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -276,84 +276,33 @@
                                             </label>
                                         </div>
                                     </div>
-
-                                    @if($paymentMethod === 'E_wallet')
-                                    <div class="mb-6 ml-12 space-y-4" x-data="{ eWalletType: '' }">
+                                
+                                    <!-- Show E-Wallet options when selected -->
+                                    <div x-show="paymentMethod === 'E_wallet'" class="mb-6 ml-12 space-y-4">
                                         <h4 class="text-sm font-medium text-gray-700 mb-3">Select E-Wallet Provider</h4>
-                                        
                                         <div class="grid grid-cols-2 gap-4">
                                             <div class="relative rounded-lg border p-4 transition-all cursor-pointer"
-                                                :class="{ 'border-blue-500 bg-green-50': eWalletType === 'gcash', 'border-gray-200 hover:border-blue-200 hover:bg-blue-50': eWalletType !== 'gcash' }"
-                                                x-on:click="eWalletType = 'gcash'; $wire.set('eWalletType', 'gcash')">
-                                                <input type="radio" id="gcash" name="eWalletType" value="gcash" wire:model="eWalletType" class="sr-only">
-                                                <div class="flex flex-col items-center justify-center">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/52/GCash_logo.svg" alt="GCash" class="h-12 mb-2">
-                                                    <span class="text-sm font-medium">GCash</span>
-                                                    
-                                                    <div x-show="eWalletType === 'gcash'" class="absolute top-2 right-2 text-blue-500">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
+                                                :class="{ 'border-blue-500 bg-green-50': $wire.eWalletType === 'gcash' }"
+                                                x-on:click="$wire.set('eWalletType', 'gcash')">
+                                                <span class="text-sm font-medium">GCash</span>
                                             </div>
-                                            
                                             <div class="relative rounded-lg border p-4 transition-all cursor-pointer"
-                                                :class="{ 'border-green-500 bg-blue-50': eWalletType === 'maya', 'border-gray-200 hover:border-blue-200 hover:bg-blue-50': eWalletType !== 'maya' }"
-                                                x-on:click="eWalletType = 'maya'; $wire.set('eWalletType', 'maya')">
-                                                <input type="radio" id="maya" name="eWalletType" value="maya" wire:model="eWalletType" class="sr-only">
-                                                <div class="flex flex-col items-center justify-center">
-                                                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/Maya_logo.svg" alt="Maya" class="h-12 mb-2">
-                                                    <span class="text-sm font-medium">Maya</span>
-                                                    
-                                                    <div x-show="eWalletType === 'maya'" class="absolute top-2 right-2 text-green-500">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
+                                                :class="{ 'border-green-500 bg-blue-50': $wire.eWalletType === 'maya' }"
+                                                x-on:click="$wire.set('eWalletType', 'maya')">
+                                                <span class="text-sm font-medium">Maya</span>
                                             </div>
                                         </div>
-
-                                @endif
-
-                                    @if($paymentMethod === 'credit_card')
-                                        <div class="mt-6 space-y-4">
-                                            <div>
-                                                <label for="cardNumber" class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                                                <div class="relative">
-                                                    <input type="text" id="cardNumber" wire:model.defer="cardNumber" 
-                                                        placeholder="•••• •••• •••• ••••" 
-                                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pr-10">
-                                                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                @error('cardNumber') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                                            </div>
-                                            
-                                            <div class="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <label for="cardExpiry" class="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                                                    <input type="text" id="cardExpiry" wire:model.defer="cardExpiry" 
-                                                        placeholder="MM/YY" 
-                                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                                    @error('cardExpiry') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                                                </div>
-                                                
-                                                <div>
-                                                    <label for="cardCvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                                                    <input type="text" id="cardCvv" wire:model.defer="cardCvv" 
-                                                        placeholder="•••" 
-                                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                                    @error('cardCvv') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
+                                    </div>
+                                
+                                    <!-- Show Credit Card fields when selected -->
+                                    <div x-show="paymentMethod === 'credit_card'" class="mt-6 space-y-4">
+                                        <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card Number</label>
+                                        <input type="text" id="cardNumber" wire:model.defer="cardNumber" 
+                                            placeholder="•••• •••• •••• ••••" 
+                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500">
+                                    </div>
                                 </div>
+                                
                                 
                                 <div class="pt-4 border-t">
                                     <button type="submit" 

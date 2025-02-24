@@ -14,12 +14,13 @@ class Login extends Component
     public $name;
     public $email;
     public $password;
+    public $password_confirmation;
 
     public function login()
     {
         $this->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required' ,
         ]);
 
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password])){
@@ -42,7 +43,7 @@ class Login extends Component
         $this->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => 'required',
+            'password' => 'required | confirmed',
         ]);
     
         // Register user
