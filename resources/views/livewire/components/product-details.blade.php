@@ -69,42 +69,43 @@
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-medium text-gray-900">Color</h3>
                                 <span class="text-sm text-gray-500">
-                                    {{ $selectedColor ? 'Selected' : 'Choose a color' }}
+                                {{ $selectedColor[2] ?? 'Choose a color' }}
+
                                 </span>
                             </div>
                             <div class="flex items-center space-x-3">
                             @foreach ($colors ?? [] as $color)
                             <button 
-                                wire:click="selectColor({{ $color->products_attributes_id }}, {{ $color->id }})"
+                                wire:click="selectColor({{ $color->products_attributes_id }}, {{ $color->id }} , '{{$color->value}}')"
                                 type="button"
                                 class="relative p-1 rounded-full flex items-center justify-center focus:outline-none">
                                 <span class="h-10 w-10 rounded-full flex items-center justify-center
                                             {{ $selectedColor && $selectedColor[0] == $color->products_attributes_id && $selectedColor[1] == $color->id ? 'ring-2 ring-indigo-600 ring-offset-2' : '' }}">
                                     <span class="h-8 w-8 rounded-full" style="background-color: {{ $color->code }}"></span>
                             </button>
-                            @endforeach
-                            </div>
+                            @endforeach 
                         </div>
+                        
 
                         <!-- Size Selection -->
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-medium text-gray-900">Size</h3>
                                 <span class="text-sm text-gray-500">
-                                    {{ $selectedSize ? 'Selected' : 'Choose a size' }}
+                                    {{ $selectedSize[2] ?? 'Choose a size' }}
                                 </span>
                             </div>
                             <div class="grid grid-cols-4 gap-2">
                                 @foreach ($sizes ?? [] as $size)
                                     <button 
-                                        wire:click="selectSize({{ $size->products_attributes_id }}, {{ $size->id }})"
+                                        wire:click="selectSize({{ $size->products_attributes_id }}, {{ $size->id }} , '{{$size->value}}')"
                                         type="button"
                                         class="h-12 flex items-center justify-center rounded-lg border-2 text-sm font-medium
                                             {{ $selectedSize && $selectedSize[0] == $size->products_attributes_id && $selectedSize[1] == $size->id
                                                 ? 'border-indigo-600 bg-indigo-50 text-indigo-600' 
                                                 : 'border-gray-200 hover:border-gray-300 text-gray-700' }}
                                             transition-all duration-200">
-                                        {{ $size->value ?? 'Size' }}
+                                        {{ $size->value ?? 'Size' }} 
                                     </button>
                                 @endforeach
                             </div>
@@ -114,7 +115,7 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-sm font-medium text-gray-900">Quantity</h3>
-                                <span class="text-sm text-gray-500">{{$selectedSkuVariant->stock ?? $product['stock'] ?? 0}}</span>
+                                <span class="text-sm font-medium text-black-500">Stock : {{$selectedSkuVariant->stock ?? $product['stock'] ?? 0}}</span>
                             </div>
                             <div class="flex items-center space-x-6">
                                 <button 

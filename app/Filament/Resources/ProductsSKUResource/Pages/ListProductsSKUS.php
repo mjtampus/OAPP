@@ -16,4 +16,5 @@ class ListProductsSKUS extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+    
 }

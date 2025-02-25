@@ -39,34 +39,42 @@ class ProductDetails extends Component
         // Get all SKUs associated with this product
         $this->skus = $this->product->sku;
     
-        // Get the correct attribute IDs dynamically
-        $colorAttributeId = ProductsAttributes::where('type', 'color')->value('id');
-        $sizeAttributeId = ProductsAttributes::where('type', 'sizes')->value('id');
+        // Extract unique attribute IDs from SKU attributes
+        $attributeIds = collect($this->skus)
+            ->pluck('attributes') // Get attributes column
+            ->flatten(1) // Flatten only one level to maintain key-value pairs
+            ->pluck(0) // Extract only the attribute IDs (first index in each pair)
+            ->unique() // Remove duplicates
+            ->values(); // Reset keys
     
-        // Initialize empty arrays for colors and sizes
+        // Fetch attribute details from the database
+        $attributes = ProductsAttributes::whereIn('id', $attributeIds)->get();
+    
+        // Initialize empty arrays for attribute types
         $this->colors = [];
         $this->sizes = [];
-
-
     
+        // Process each SKU
         foreach ($this->skus as $sku) {
             // Get the attributes of each SKU 
-            $attributes = $sku->attributes ?? [];
+            $skuAttributes = $sku->attributes ?? [];
     
-            foreach ($attributes as $attribute) {
+            foreach ($skuAttributes as $attribute) {
                 $attrId = $attribute[0];  // Attribute ID (e.g., color, size)
                 $attrValueId = $attribute[1]; // Attribute Value ID (e.g., red, large)
     
-                // Fetch attribute value details
-                if ($attrId == $colorAttributeId) {
+                // Find the attribute type dynamically
+                $attributeType = $attributes->firstWhere('id', $attrId)?->type;
+    
+                if ($attributeType === 'color') {
                     // Color Attribute
                     $color = $this->getAttributeValue($attrValueId);
                     if ($color && !in_array($color, $this->colors)) {
                         $this->colors[] = $color;
                     }
                 }
-
-                if ($attrId == $sizeAttributeId) {
+    
+                if ($attributeType === 'sizes') {
                     // Size Attribute
                     $size = $this->getAttributeValue($attrValueId);
                     if ($size && !in_array($size, $this->sizes)) {
@@ -77,19 +85,21 @@ class ProductDetails extends Component
         }
     }
     
+    
     private function getAttributeValue($valueId, $type = null)
     {
         return ProductsAttributesValues::find($valueId);
     }
-    public function selectColor($attributeId , $valueId)
+    public function selectColor($attributeId , $valueId , $Value )
     {
-        $this->selectedColor = [$attributeId, $valueId];  // Store both attribute and value
+        $this->selectedColor = [$attributeId, $valueId , $Value ]; 
         $this->updateSelectedSkuVariant();
+
     }
     
-    public function selectSize($attributeId , $valueId)
+    public function selectSize($attributeId , $valueId, $Value )
     {
-        $this->selectedSize = [$attributeId, $valueId];  // Store both attribute and value
+        $this->selectedSize = [$attributeId, $valueId , $Value ];  // Store both attribute and value
         $this->updateSelectedSkuVariant();
     }
     public function incrementQuantity()

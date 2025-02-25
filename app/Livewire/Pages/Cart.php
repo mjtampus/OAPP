@@ -228,10 +228,9 @@ class Cart extends Component
     
     public function updatedSelectedProducts()
     {
-        // Ensure "Select All" reflects actual selection
+       
         $this->selectAll = !empty($this->cartProducts) && count($this->selectedProducts) === count($this->cartProducts);
     
-        // Update selected cart products
         $this->selectedCartProducts = !empty($this->selectedProducts)
             ? collect($this->cartProducts)->whereIn('id', $this->selectedProducts)->toArray()
             : [];
@@ -241,7 +240,7 @@ class Cart extends Component
     
     private function calculateTotals()
     {
-        // Get only selected products from $cartProducts
+        // Get only selected products 
         $selectedCartProducts = collect($this->cartProducts)
             ->whereIn('id', $this->selectedProducts);
     
@@ -268,7 +267,7 @@ class Cart extends Component
 
             return redirect(route('checkout')); // Redirect logged-in users to checkout
         } 
-        return redirect(route('login')); // Redirect guests to login
+        return redirect(route('login')); 
     }
 
     public function render()

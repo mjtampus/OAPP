@@ -13,15 +13,10 @@ use App\Http\Controllers\PaymentController;
 use App\Livewire\Components\ProductDetails;
 use App\Livewire\Auth\Payments\PaymentSuccess;
 
-
 // Route::get('/', function () {
-
 //     $orders = Order::with('payment')->paginate(5, ['*'], 'orders_page');
 //     $payments = Payment::with('order')->paginate(5, ['*'], 'payments_page'); 
-
 //     return view('welcome', compact('orders', 'payments'));
-
-    
 // })->name('home');
 
 Route::get('/',HomePage::class)->lazy()->name('home');
@@ -30,7 +25,6 @@ Route::get('/cart',Cart::class)->lazy()->name('cart');
 Route::get('/login',Login::class)->lazy()->name('login');
 Route::get('/checkout' ,Checkout::class)->name('checkout')->middleware('auth'); 
 Route::get('/product/{productId}', ProductDetails::class)->name('product.details');
-
 
 Route::get('payment/{id}/{gateway}',[PaymentController::class,'payment'])->name('payment');
 Route::get('payment-sucess',[PaymentController::class,'paymentSuccess'])->name('payment.success');

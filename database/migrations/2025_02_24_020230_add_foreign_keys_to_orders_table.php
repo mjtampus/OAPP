@@ -8,15 +8,15 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->foreignId('cart_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('cart_id')->constrained()->onDelete('cascade')->nullable();
         });
     }
 
     public function down()
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropForeign(['cart_id']);
-            $table->dropColumn(['cart_id']);
+            // $table->dropForeign(['cart_id']);
+            // $table->dropColumn(['cart_id']);
         });
     }
 };
