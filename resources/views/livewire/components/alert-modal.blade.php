@@ -76,7 +76,7 @@
                     </button>
                 </div>
                 
-                <!-- Close button with spin animation -->
+                <!-- Close buttom -->
                 <button 
                     x-show="show"
                     x-transition:enter="transition ease-out duration-400 delay-500"

@@ -45,7 +45,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Google', 'category_id' => 3],
         ]);
 
-        Products::factory()->create([
+        Products::factory()->createMany([
+            [
             'name' => 'Samsung Galaxy S24 Ultra',
             'description' => 'A high-end smartphone with advanced features.',
             'price' => 78000,
@@ -55,12 +56,26 @@ class DatabaseSeeder extends Seeder
             'is_featured' => true,
             'stock' => 200,
             'product_image_dir' => '01JMXDJXH49TX4RWPQHCGQWCGV.jpg',
-
+            ],
+            [
+            'name' => 'Iphone 15 Pro Max',
+            'description' => 'IPhone 15 Pro Max. Forged in titanium and featuring the groundbreaking A17 Pro chip, a customizable Action button, and the most powerful iPhone camera system',
+            'price' => 79190,
+            'category_id' => 2,
+            'brand_id' => 3,
+            'is_new_arrival' => true,
+            'is_featured' => true,
+            'stock' => 200,
+            'product_image_dir' => '01JMXW6Z7FNN38K10VT85MKKJE.webp',
+            ],
+            
         ]);
 
         ProductsAttributes::factory()->createMany([
             ['type' => 'color', 'products_id' => 1],
             ['type' => 'sizes', 'products_id' => 1],
+            ['type' => 'color', 'products_id' => 2],
+            ['type' => 'sizes', 'products_id' => 2],
         ]);
 
         ProductsAttributesValues::factory()->createMany([
@@ -69,6 +84,14 @@ class DatabaseSeeder extends Seeder
             ['value' => 'Titanium Grey', 'products_attributes_id' => 1 , 'code' => '#adadad'],
             ['value' => '512GB', 'products_attributes_id' => 2 , 'code' => NULL],
             ['value' => '1TB', 'products_attributes_id' => 2 , 'code' => NULL],
+            ['value' => 'Titanium Black', 'products_attributes_id' => 3 , 'code' => '#464543' ],
+            ['value' => 'Titanium Blue', 'products_attributes_id' => 3 , 'code' => '#515662' ],
+            ['value' => 'Titanium Natural', 'products_attributes_id' => 3 , 'code' => '#b1ada4' ],
+            ['value' => 'Titanium White', 'products_attributes_id' => 3 , 'code' => '#f4f1e9' ],
+            ['value' => '256GB', 'products_attributes_id' => 4 , 'code' => NULL],
+            ['value' => '512GB', 'products_attributes_id' => 4 , 'code' => NULL],
+            ['value' => '1TB', 'products_attributes_id' => 4 , 'code' => NULL],
+
         ]);
 
         ProductsSKU::factory()->createMany([
@@ -119,7 +142,103 @@ class DatabaseSeeder extends Seeder
             'price' => 78000,
             'stock' => 200,
             'sku_image_dir' => '01JMXFQ7ZEC0T1R6DPD7GP3Y7S.jpg',
+           ],[
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,6],[4,10]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD71MS5KZEPXEGTMV7J3.webp',
            ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,7],[4,10]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD897H1FEEBE1QYE4A8P.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,8],[4,10]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD8D89MHVZ5W67KWXWX3.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,9],[4,10]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD8FGV80C584DN7D113F.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,6],[4,11]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD8T4NPSCN137RX2Q06Y.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,7],[4,11]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD90WJHV0SBHHMQS5DVC.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,8],[4,11]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD94H28W442ZM0247REJ.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,9],[4,11]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD9H2NFFV5Z44PEYH26T.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,6],[4,12]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD9T9VBG5PPVHXJEJYBJ.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,7],[4,12]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBD9YETMC59684WH0H82P.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,8],[4,12]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBDA9B97F44A0N58KNCWT.webp',
+           ],
+           [
+            'products_id' => 2,
+            'sku' => 'Iphone 15 Pro Max - '.Str::random(5),
+            'attributes' => [[3,9],[4,12]],
+            'price' => 71190,
+            'stock' => 200,
+            'sku_image_dir' => '01JMXWBDAR0KJXPMSTYBQ488VG.webp',
+           ],
+
            
 
         ]);

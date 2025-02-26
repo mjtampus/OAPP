@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('products_attributes_id')->constrained('products_attributes')->cascadeOnDelete();
             $table->string('value');
-            $table->string('code')->nullabe();
+            $table->string('code')->nullable();
             $table->timestamps();
         });
     }

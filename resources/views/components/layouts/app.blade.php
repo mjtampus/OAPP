@@ -15,7 +15,6 @@
     
     <!-- Global Loading Indicator -->
 
-    
     <livewire:components.shop-header-navigation />
     
     <div class="toastify">

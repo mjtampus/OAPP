@@ -24,7 +24,7 @@
                 @endif
             </a>
             @auth
-            <div class="relative" x-data="{ open: false }">
+            <div class=" relative" x-data="{ open: false }">
                 <button @click="open = !open" @click.away="open = false" class="flex items-center space-x-2 text-gray-700 hover:text-blue-600 transition-colors duration-300">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 14c4.418 0 8 1.79 8 4v2H4v-2c0-2.21 3.582-4 8-4z"/>
@@ -33,20 +33,23 @@
                     <span>{{ Auth::user()->name }}</span>
  
                 </button>
-                <div x-show="open" 
-                     x-transition:enter="transition ease-out duration-100"
-                     x-transition:enter-start="opacity-0 scale-95"
-                     x-transition:enter-end="opacity-100 scale-100"
-                     x-transition:leave="transition ease-in duration-75"
-                     x-transition:leave-start="opacity-100 scale-100"
-                     x-transition:leave-end="opacity-0 scale-95"
-                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                    <a href="/account" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">My Account</a>
-                    <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Orders</a>
-                    <a wire:click.prevent="logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600" wire:loading.attr="disabled">
-                        Logout
-                    </a>
-                </div>
+                <div 
+                x-show="open" 
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                :class="{ 'hidden': !open }" 
+                class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden">
+
+                <a href="/account" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">My Account</a>
+                <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Orders</a>
+
+                <a wire:click.prevent="logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600" wire:loading.attr="disabled">
+                    Logout
+                </a>
             </div>
             @else
             <a href="/login" wire:navigate.hover class="text-gray-700 hover:text-blue-600 transition-colors duration-300 relative group">

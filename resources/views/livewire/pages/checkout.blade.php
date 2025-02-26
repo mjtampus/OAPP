@@ -24,7 +24,7 @@
                                         </div>
                                         <div class="ml-4">
                                             <h3 class="font-medium text-gray-900">{{ $item['name'] }}</h3>
-                                            <p class="text-gray-600 mt-1">${{ number_format($item['price'], 2) }}</p>
+                                            <p class="text-gray-600 mt-1">₱{{ number_format($item['price'], 2) }}</p>
                                         </div>
                                     </div>
                                     
@@ -70,20 +70,20 @@
                             <div class="space-y-3">
                                 <div class="flex justify-between text-gray-600">
                                     <span>Subtotal</span>
-                                    <span>${{ number_format($subtotal, 2) }}</span>
+                                    <span>₱{{ number_format($subtotal, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
                                     <span>Tax</span>
-                                    <span>${{ number_format($tax, 2) }}</span>
+                                    <span>₱{{ number_format($tax, 2) }}</span>
                                 </div>
                                 <div class="flex justify-between text-gray-600">
                                     <span>Shipping</span>
-                                    <span>${{ number_format($shipping, 2) }}</span>
+                                    <span>₱{{ number_format($shipping, 2) }}</span>
                                 </div>
                                 <div class="h-px bg-gray-200 my-2"></div>
                                 <div class="flex justify-between font-bold text-lg text-gray-900">
                                     <span>Total</span>
-                                    <span>${{ number_format($total, 2) }}</span>
+                                    <span>₱{{ number_format($total, 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -99,30 +99,7 @@
                         </div>
                     @endif
                 </div>
-                
-                <!-- Order Progress -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Order Progress</h2>
-                    <div class="flex items-center justify-between w-full relative">
-                        <div class="absolute left-0 top-1/2 h-1 bg-gray-200 w-full -translate-y-1/2 z-0"></div>
-                        <div class="absolute left-0 top-1/2 h-1 bg-blue-500 w-1/3 -translate-y-1/2 z-0"></div>
-                        
-                        <div class="flex flex-col items-center z-10">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mb-2">1</div>
-                            <span class="text-sm font-medium text-blue-600">Cart</span>
-                        </div>
-                        
-                        <div class="flex flex-col items-center z-10">
-                            <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mb-2">2</div>
-                            <span class="text-sm font-medium text-blue-600">Checkout</span>
-                        </div>
-                        
-                        <div class="flex flex-col items-center z-10">
-                            <div class="w-8 h-8 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center mb-2">3</div>
-                            <span class="text-sm font-medium text-gray-500">Confirmation</span>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             
             <!-- Right Column: Checkout Form -->
@@ -216,9 +193,7 @@
                                             <select id="country" wire:model.defer="country" 
                                                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                                                 <option value="">Select country</option>
-                                                <option value="US">United States</option>
-                                                <option value="CA">Canada</option>
-                                                <option value="MX">Mexico</option>
+                                                <option value="PH">Philippines</option>
                                                 <option value="UK">United Kingdom</option>
                                             </select>
                                             @error('country') <span class="text-red-500 text-sm mt-1">{{ $message }}</span> @enderror
@@ -294,13 +269,6 @@
                                         </div>
                                     </div>
                                 
-                                    <!-- Show Credit Card fields when selected -->
-                                    <div x-show="paymentMethod === 'credit_card'" class="mt-6 space-y-4">
-                                        <label for="cardNumber" class="block text-sm font-medium text-gray-700">Card Number</label>
-                                        <input type="text" id="cardNumber" wire:model.defer="cardNumber" 
-                                            placeholder="•••• •••• •••• ••••" 
-                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500">
-                                    </div>
                                 </div>
                                 
                                 

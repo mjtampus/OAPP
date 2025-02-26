@@ -74,7 +74,8 @@ class Checkout extends Component
     public function incrementQuantity($cartId)
     {   
         $updateCart = Carts::find($cartId);
-    
+
+
         if ($updateCart) {
             $updateCart->increment('quantity');
     
@@ -85,9 +86,9 @@ class Checkout extends Component
                     break;
                 }
             }
-
             return $this->calculateTotals();
         }
+        
     }
     public function decrementQuantity($cartId)
     {
@@ -114,21 +115,23 @@ class Checkout extends Component
     
         // Retrieve cart session data
         $cartCheckout = Session::get('cart-checkout', []);
+        $cartID = collect($cartCheckout)->pluck('id');
+       
+        $cartCheckout = Carts::whereIn('sku_id', $cartID)->get();
     
         foreach ($cartCheckout as $cart) {
             // Find product and SKU from database
-            $product = Products::find($cart['product_id']);
-            $sku = ProductsSKU::find($cart['id']); // Assuming 'id' is the SKU ID
+            $product = Products::find($cart['products_id']);
+            $sku = ProductsSKU::find($cart['sku_id']); // Assuming 'id' is the SKU ID
     
             if (!$product || !$sku) {
                 continue; // Skip if not found
             }
     
-            // Store cart details
             $this->cartItems[] = [
                 'id' => $cart['id'],
                 'cart_id' => $cart['cart_id'], // SKU ID
-                'product_id' => $cart['product_id'],
+                'product_id' => $product->id,
                 'sku_id' => $cart['id'],
                 'price' => $sku->price,
                 'image' => $sku->sku_image_dir,
@@ -154,7 +157,7 @@ class Checkout extends Component
     {
         if ($newQuantity > 0) {
             foreach ($this->cartItems as $index => $item) {
-                if ($item['sku_id'] == $itemId) {
+                if ($item['id'] == $itemId) {
                     $this->cartItems[$index]['quantity'] = $newQuantity;
                     break;
                 }
@@ -169,7 +172,7 @@ class Checkout extends Component
 
     // Filter out the item with the given ID
     $updatedCart = array_filter($cartCheckout, function ($item) use ($itemId) {
-        return $item['sku_id'] != $itemId; // Keep items that don't match the given ID
+        return $item['id'] != $itemId; // Keep items that don't match the given ID
     });
 
     // Reindex the array (optional)
@@ -195,18 +198,22 @@ public function placeOrder()
     }
 
     $totalAmount = collect($this->cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
-
+    $productsQuantity = collect($this->cartItems)->count();
     $order = Order::create([
         'user_id' => auth()->user()->id,
         'amount' => $totalAmount,
-        'payment_method' => $this->eWalletType ?? $this->paymentMethod,
+        'order_number' => 'ORD#'. rand(1000, 9999), 
+        // 'order_name' => auth()->user()->name,
+        // 'order_description' => 'Example Description',
+        // 'quantity' => $productsQuantity,
+        'payment_method' => $value = empty(trim($this->eWalletType)) ? $this->paymentMethod : $this->eWalletType,
         'order_status' => 'pending'
     ]);
 
     foreach ($this->cartItems as $item) {
         OrderItems::create([
             'order_id' => $order->id,
-            'cart_id' => $item['cart_id'],
+            'cart_id' => $item['id'],
             'product_id' => $item['product_id'],
             'sku_id' => $item['sku_id'],
             'quantity' => $item['quantity'],
@@ -221,6 +228,8 @@ public function placeOrder()
         'E_wallet' => 'paymongo',
         default => 'COD',
     };
+
+    Session::forget('cart-checkout');
 
     return redirect()->route('payment', ['id' => $order->id, 'gateway' => $gateway]);
 }

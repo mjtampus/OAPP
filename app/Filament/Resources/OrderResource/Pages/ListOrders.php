@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\OrderResource\Pages;
 
-use App\Filament\Resources\OrderResource;
 use Filament\Actions;
+use App\Filament\Resources\OrderResource;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 
 class ListOrders extends ListRecords
 {
@@ -16,4 +17,5 @@ class ListOrders extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
 }

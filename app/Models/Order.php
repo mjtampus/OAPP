@@ -19,12 +19,14 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
+        'order_number',
         // 'order_name',
         // 'order_description',
         'amount',
         'user_id',
         'is_paid',
         'payment_method',
+        'order_status',
     ];
 
     public function payment() :HasOne

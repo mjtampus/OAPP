@@ -44,7 +44,6 @@
                 <!-- Product Info Section -->
                 <div class="p-8 lg:p-12 bg-white">
                     <div class="space-y-8">
-                        <!-- Header -->
                         <div>
                             <h1 class="text-4xl font-bold text-gray-900 mb-4 leading-tight">
                                 {{ $product['name'] ?? 'Product Name' }}

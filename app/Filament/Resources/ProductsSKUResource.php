@@ -29,6 +29,7 @@ class ProductsSKUResource extends Resource
     protected static ?string $navigationLabel = 'SKU-Variations';
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
+
     public static function getNavigationBadge(): ?string
     {
 
@@ -44,9 +45,8 @@ class ProductsSKUResource extends Resource
                     ->label('Select Product')
                     ->options(Products::pluck('name', 'id'))
                     ->required()
-                    ->live(),
-                Section::make('Generate Product Variants')
-                    ->description('This will generate all possible combinations based on product attributes.')
+                    ->disabled(),
+                Section::make('Product Variants')
                     ->schema([
                                 TextInput::make('sku')  // Changed from empty string to 'sku'
                                     ->label('SKU')

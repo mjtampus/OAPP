@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::table('orders', function (Blueprint $table) {
             // $table->foreignId('cart_id')->constrained()->onDelete('cascade')->nullable();
         });
+        
     }
 
     public function down()
