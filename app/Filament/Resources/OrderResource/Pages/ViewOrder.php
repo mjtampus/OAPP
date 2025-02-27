@@ -4,12 +4,11 @@ namespace App\Filament\Resources\OrderResource\Pages;
 
 use Filament\Actions;
 use Filament\Forms\Form;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Group;
+use Filament\Infolists\Infolist;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Group;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Resources\OrderResource;
 use Filament\Forms\Components\Placeholder;
@@ -26,141 +25,165 @@ class ViewOrder extends ViewRecord
         ];
     }
 
-    public function form(Form $form): Form
+    public function infolist(Infolist $infolist): Infolist
     {
-        return $form->schema([
+        return $infolist->schema([
             Grid::make([
                 'default' => 1,
                 'md' => 3,
             ])->schema([
                 // Column 1: Order Information
-                Section::make('Order Details')
-                    ->columnSpan(['default' => 1, 'md' => 1])
-                    ->schema([
-
-                        Select::make('order_status')
-                        ->label('Order Status')
-                        ->options([
-                            'pending' => 'Pending'
+                \Filament\Infolists\Components\Section::make('Order Details')
+                ->columnSpan(['default' => 1, 'md' => 1])
+                ->schema([
+                    \Filament\Infolists\Components\Grid::make(1)
+                        ->schema([
+                            \Filament\Infolists\Components\TextEntry::make('order_status')
+                                ->label('Order Status')
+                                ->badge()
+                                ->formatStateUsing(fn ($state) => ucfirst($state))
+                                ->color(fn ($state) => match($state) {
+                                    'pending' => 'warning',
+                                    'processing' => 'info',
+                                    'shipped' => 'info',
+                                    'delivered' => 'success',
+                                    'cancelled' => 'danger',
+                                    default => 'secondary',
+                                })
+                                ->suffixAction(
+                                    \Filament\Infolists\Components\Actions\Action::make('updateStatus')
+                                        ->label('Update Status')
+                                        ->icon('heroicon-m-pencil-square')
+                                        ->color('primary')
+                                        ->form([
+                                            \Filament\Forms\Components\Select::make('order_status')
+                                                ->label('New Status')
+                                                ->options([
+                                                    'pending' => 'Pending',
+                                                    'processing' => 'Processing',
+                                                    'shipped' => 'Shipped',
+                                                    'delivered' => 'Delivered',
+                                                    'cancelled' => 'Cancelled',
+                                                ])
+                                                ->default(fn () => $this->record->order_status)
+                                                ->required(),
+                                        ])
+                                        ->action(function (array $data) {
+                                            $this->record->update([
+                                                'order_status' => $data['order_status'],
+                                            ]);
+                                            
+                                            Notification::make()
+                                                ->title('Order status updated successfully')
+                                                ->success()
+                                                ->send();
+                                        })
+                                ),
                         ]),
-
-                        Placeholder::make('order_number')
-                            ->label('Order Number')
-                            ->content(fn ($record) => $record->order_number),
-
-                        Placeholder::make('created_at')
+                        
+                
+                        \Filament\Infolists\Components\TextEntry::make('order_number')
+                            ->label('Order Number'),
+    
+                        \Filament\Infolists\Components\TextEntry::make('created_at')
                             ->label('Order Date')
-                            ->content(fn ($record) => $record->created_at->format('F j, Y - g:i A')),
+                            ->dateTime('F j, Y - g:i A'),
                     ]),
                 
                 // Column 2: Status & Payment Information
-                Section::make('Status & Payment')
+                \Filament\Infolists\Components\Section::make('Status & Payment')
                     ->columnSpan(['default' => 1, 'md' => 1])
                     ->schema([
-
-                        Placeholder::make('payment_method')
+                        \Filament\Infolists\Components\TextEntry::make('payment_method')
                             ->label('Payment Method')
-                            ->content(fn ($record) => ucfirst($record->payment_method)),
-
-                        Placeholder::make('is_paid')
+                            ->formatStateUsing(fn ($state) => ucfirst($state)),
+    
+                        \Filament\Infolists\Components\TextEntry::make('is_paid')
                             ->label('Payment Status')
-                            ->content(fn ($record) => $record->is_paid ? 'Paid' : 'Unpaid'),
+                            ->formatStateUsing(fn ($state) => $state ? 'Paid' : 'Unpaid')
+                            ->badge()
+                            ->color(fn ($state) => $state ? 'success' : 'danger')
+                            ->suffixAction(
+                                \Filament\Infolists\Components\Actions\Action::make('updatePaymentStatus')
+                                    ->label('Update Payment Status')
+                                    ->icon('heroicon-m-pencil-square')
+                                    ->color('primary')
+                                    ->form([
+                                        \Filament\Forms\Components\Select::make('is_paid')
+                                            ->label('Payment Status')
+                                            ->options([
+                                                true => 'Paid',
+                                                false => 'Unpaid',
+                                            ])
+                                            ->default(fn () => $this->record->is_paid)
 
-                        Placeholder::make('amount')
+                                        ])
+                                        ->action(function (array $data) {
+                                            $this->record->update([
+                                                'is_paid' => $data['is_paid'],
+                                            ]);
+                                            Notification::make()
+                                            ->title('Order status updated successfully')
+                                            ->success()
+                                            ->send();
+                                        }),
+                                    ),
+    
+                        \Filament\Infolists\Components\TextEntry::make('amount')
                             ->label('Total Amount')
-                            ->content(fn ($record) => '₱' . number_format($record->amount, 2)),
+                            ->money('PHP'),
                     ]),
-
+    
                 // Column 3: Customer Information
-                Section::make('Customer Information')
+                \Filament\Infolists\Components\Section::make('Customer Information')
                     ->columnSpan(['default' => 1, 'md' => 1])
                     ->schema([
-                        Placeholder::make('customer_name')
-                            ->label('Customer Name')
-                            ->content(fn ($record) => $record->user?->name),
-
-                        Placeholder::make('customer_email')
-                            ->label('Email Address')
-                            ->content(fn ($record) => $record->user?->email),
+                        \Filament\Infolists\Components\TextEntry::make('user.name')
+                            ->label('Customer Name'),
+    
+                        \Filament\Infolists\Components\TextEntry::make('user.email')
+                            ->label('Email Address'),
                             
-                        Placeholder::make('customer_phone')
+                        \Filament\Infolists\Components\TextEntry::make('user.phone')
                             ->label('Phone Number')
-                            ->content(fn ($record) => $record->user?->phone ?? 'Not provided'),
+                            ->default('Not provided'),
                     ]),
             ]),
-
-            Section::make('Notes')
-            ->collapsed()
-            ->schema([
-                Placeholder::make('notes')
-                    ->content(fn ($record) => $record->notes ?? 'No notes for this order'),
-            ]),
+    
+            \Filament\Infolists\Components\Section::make('Notes')
+                ->collapsed()
+                ->schema([
+                    \Filament\Infolists\Components\TextEntry::make('notes')
+                        ->default('No notes for this order'),
+                ]),
             
             // Order Items Section (Full Width)
-            Section::make('Order Items')
+            \Filament\Infolists\Components\Section::make('Order Items')
                 ->icon('heroicon-o-rectangle-stack')
                 ->schema([
-                    Repeater::make('items')
+                    \Filament\Infolists\Components\RepeatableEntry::make('items')
                         ->label('Order Items')
-                        ->relationship('items') // Ensure this is correctly set up in your Model
                         ->schema([
-                            Placeholder::make('product_name')
-                            ->label('Product Name')
-                            ->content(fn ($record) => $record->product->name)
-                            ->disabled(),
-
-                            Placeholder::make('sku')
-                                ->label('sku')
-                                ->content(fn ($record) => $record->sku->sku)
-                                ->disabled(),
+                            \Filament\Infolists\Components\TextEntry::make('product.name')
+                                ->label('Product Name'),
+    
+                            \Filament\Infolists\Components\TextEntry::make('sku.sku')
+                                ->label('SKU'),
             
-                            Placeholder::make('quantity')
-                                ->content(fn ($record) => $record->quantity)
-                                ->label('Quantity')
-                                ->disabled(),
+                            \Filament\Infolists\Components\TextEntry::make('quantity')
+                                ->label('Quantity'),
             
-                            Placeholder::make('price')
+                            \Filament\Infolists\Components\TextEntry::make('price')
                                 ->label('Price')
-                                ->content(fn ($state) => '₱' . number_format($state, 2))
-                                ->disabled(),
+                                ->money('PHP'),
             
-                            Placeholder::make('subtotal')
+                            \Filament\Infolists\Components\TextEntry::make('subtotal')
                                 ->label('Subtotal')
-                                ->content(fn ($record) => '₱' . number_format($record->price * $record->quantity, 2))
-                                ->disabled(),
+                                ->state(fn ($record) => $record->price * $record->quantity)
+                                ->money('PHP'),
                         ])
-                        ->columns(5)
-                        ->disabled(), // Make it readonly in View mode
+                        ->columns(5),
                 ]),
-        
-            // Shipping Information (Full Width)
-            // Section::make('Shipping Information')
-            //     ->schema([
-            //         Grid::make(2)
-            //             ->schema([
-            //                 Group::make([
-            //                     Placeholder::make('shipping_address')
-            //                         ->label('Shipping Address')
-            //                         ->content(fn ($record) => $record->shipping_address ?? 'No shipping address provided'),
-                                    
-            //                     Placeholder::make('shipping_method')
-            //                         ->label('Shipping Method')
-            //                         ->content(fn ($record) => $record->shipping_method ?? 'Standard Shipping'),
-            //                 ]),
-                            
-            //                 Group::make([
-            //                     Placeholder::make('tracking_number')
-            //                         ->label('Tracking Number')
-            //                         ->content(fn ($record) => $record->tracking_number ?? 'Not yet assigned'),
-                                    
-            //                     Placeholder::make('estimated_delivery')
-            //                         ->label('Estimated Delivery')
-            //                         ->content(fn ($record) => $record->estimated_delivery ? $record->estimated_delivery->format('F j, Y') : 'Not available'),
-            //                 ]),
-            //             ]),
-            //     ]),
-                
-            // Order Notes (Full Width)
         ]);
     }
 
