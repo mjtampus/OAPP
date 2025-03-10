@@ -34,6 +34,7 @@ class ViewOrder extends ViewRecord
             ])->schema([
                 // Column 1: Order Information
                 \Filament\Infolists\Components\Section::make('Order Details')
+                ->icon('heroicon-m-document-text')
                 ->columnSpan(['default' => 1, 'md' => 1])
                 ->schema([
                     \Filament\Infolists\Components\Grid::make(1)
@@ -92,6 +93,7 @@ class ViewOrder extends ViewRecord
                 
                 // Column 2: Status & Payment Information
                 \Filament\Infolists\Components\Section::make('Status & Payment')
+                ->icon('heroicon-m-currency-dollar')
                     ->columnSpan(['default' => 1, 'md' => 1])
                     ->schema([
                         \Filament\Infolists\Components\TextEntry::make('payment_method')
@@ -116,7 +118,6 @@ class ViewOrder extends ViewRecord
                                                 false => 'Unpaid',
                                             ])
                                             ->default(fn () => $this->record->is_paid)
-
                                         ])
                                         ->action(function (array $data) {
                                             $this->record->update([
@@ -137,6 +138,7 @@ class ViewOrder extends ViewRecord
                 // Column 3: Customer Information
                 \Filament\Infolists\Components\Section::make('Customer Information')
                     ->columnSpan(['default' => 1, 'md' => 1])
+                    ->icon('heroicon-m-user')
                     ->schema([
                         \Filament\Infolists\Components\TextEntry::make('user.name')
                             ->label('Customer Name'),
@@ -159,7 +161,7 @@ class ViewOrder extends ViewRecord
             
             // Order Items Section (Full Width)
             \Filament\Infolists\Components\Section::make('Order Items')
-                ->icon('heroicon-o-rectangle-stack')
+                ->icon('heroicon-m-shopping-bag')
                 ->schema([
                     \Filament\Infolists\Components\RepeatableEntry::make('items')
                         ->label('Order Items')

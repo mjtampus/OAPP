@@ -195,7 +195,8 @@ class OrderResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('order_number')
                     ->label('Order #')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer Name')
@@ -205,7 +206,17 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('order_status')
                     ->label('Status')
                     ->badge()
-                    ->sortable(),
+                    ->sortable()
+                    ->color(function (string $state): string {
+                        return match ($state) {
+                            'pending' => 'warning',
+                            'processing' => 'warning',
+                            'shipped' => 'info',
+                            'delivered' => 'success',
+                            'cancelled' => 'danger',
+                            default => 'secondary',
+                        };
+                    }),
 
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Payment Method')
@@ -256,6 +267,7 @@ class OrderResource extends Resource
             // Add relation managers here if needed
         ];
     }
+
 
     /** 
      * Define Resource Pages 
