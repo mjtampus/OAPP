@@ -130,8 +130,9 @@ class ProductVariations extends EditRecord
                 $product['price'] = $defaultPrice;
                 $product['sku'] = $this->generateSKU($optionIds);
             }
-    
+
             $mergeResult[] = $product;
+
         }
         return $mergeResult;
     }
@@ -162,7 +163,6 @@ class ProductVariations extends EditRecord
     
     private function generateSKU($combination)
     {
-
         return 'SKU-' . $this->record->name. '-' .substr(md5(json_encode($combination)), 0, 8);
     }
 
@@ -174,7 +174,8 @@ class ProductVariations extends EditRecord
     }
 
     public static function getNavigationLabel(): string
-{
-    return 'SKU Variations';
-}
+    {
+        return 'SKU Variations';
+    }
+    
 }

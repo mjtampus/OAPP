@@ -195,17 +195,15 @@ class ViewOrder extends ViewRecord
         ->columns([
             TextColumn::make('product_name')
                 ->label('Product Name'),
-
             
             TextColumn::make('quantity')
                 ->label('Quantity'),
 
             TextColumn::make('price')
                 ->label('Price'),
-
             
             TextColumn::make('subtotal')
                 ->label('Subtotal'),
         ]);
-}
+    }
 }

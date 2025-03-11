@@ -37,40 +37,6 @@ class ProductsSKUResource extends Resource
 
     }
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Select::make('products_id')
-                    ->label('Select Product')
-                    ->options(Products::pluck('name', 'id'))
-                    ->required()
-                    ->disabled(),
-                Section::make('Product Variants')
-                    ->schema([
-                                TextInput::make('sku')  // Changed from empty string to 'sku'
-                                    ->label('SKU')
-                                    ->disabled(),
-                                TextInput::make('attributes')
-                                    ->label('Variation')
-                                    ->disabled(),
-                                TextInput::make('price')
-                                    ->label('Price')
-                                    ->numeric()
-                                    ->required(),
-                                TextInput::make('stock')
-                                    ->label('Stock')
-                                    ->numeric()
-                                    ->required(),
-                                FileUpload::make('sku_image_dir')
-                                    ->label('SKU Image')
-                                    ->image()
-                                    ->directory('products/skus')
-                                    ->visibility('public')
-                    ]),
-            ]);
-    }
-
     
     public static function table(Table $table): Table
     {
@@ -126,6 +92,7 @@ class ProductsSKUResource extends Resource
         return [
             'index' => Pages\ListProductsSKUS::route('/'),
             'edit' => Pages\EditProductsSKU::route('/{record}/edit'),
+            'view' => Pages\ViewProductsSKU::route('/{record}/view'),
         ];
     }
     public static function canCreate(): bool
