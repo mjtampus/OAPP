@@ -124,7 +124,7 @@ class ViewOrder extends ViewRecord
                                                 'is_paid' => $data['is_paid'],
                                             ]);
                                             Notification::make()
-                                            ->title('Order status updated successfully')
+                                            ->title('Payment status updated successfully')
                                             ->success()
                                             ->send();
                                         }),

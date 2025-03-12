@@ -14,6 +14,7 @@ use App\Models\ProductsAttributesValues;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Forms\Components\FileUpload;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
@@ -70,11 +71,7 @@ class ViewProductsSKU extends ViewRecord
                                         $attributes = is_string($record->attributes)
                                             ? json_decode($record->attributes, true)
                                             : $record->attributes;
-                                        
-                                        if (!is_array($attributes)) {
-                                            return 'Invalid Data';
-                                        }
-                                        
+
                                         $ids = array_filter(array_map(fn($arr) => is_array($arr) ? ($arr[1] ?? null) : null, $attributes));
                                         
                                         if (empty($ids)) {
@@ -95,43 +92,66 @@ class ViewProductsSKU extends ViewRecord
                                     ->color('success')
                                     ->prefixAction(
                                         Action::make('editPrice')
-                                            ->icon('heroicon-m-currency-dollar')
+                                            ->tooltip('Update Price')
+                                            ->icon('heroicon-m-pencil-square')
                                             ->requiresConfirmation()
                                             ->modalHeading('Update Price')
                                             ->modalDescription('Enter the new price for this variant')
-                                            ->form([
-                                                TextInput::make('price')
-                                                    ->label('New Price')
-                                                    ->prefix('PHP')
-                                                    ->numeric()
-                                                    ->required(),
-                                            ])
+                                            ->form(function (Model $record) {
+                                                return [
+                                                    TextInput::make('price')
+                                                        ->label('Current price')
+                                                        ->numeric()
+                                                        ->default($record->price)
+                                                        ->required(),
+                                                ];
+                                            })
                                             ->action(fn(array $data, Model $record) => $record->update(['price' => $data['price']]))
-                                    ),
-                                
-                                TextEntry::make('stock')
+                                    ),                                
+                                    TextEntry::make('stock')
                                     ->label('Stock')
                                     ->badge()
                                     ->color(fn($state) => $state <= 0 ? 'danger' : ($state < 10 ? 'warning' : 'success'))
                                     ->prefixAction(
                                         Action::make('updateStock')
-                                            ->icon('heroicon-m-plus')
+                                            ->icon('heroicon-m-pencil-square')
+                                            ->tooltip('Update Stock')
                                             ->modalHeading('Update Stock')
-                                            ->form([
-                                                TextInput::make('stock')
-                                                    ->label('Current Stock')
-                                                    ->numeric()
-                                                    ->required(),
-                                            ])
+                                            ->extraAttributes(['class' => 'justify-start'])
+                                            ->form(function (Model $record) {
+                                                return [
+                                                    TextInput::make('stock')
+                                                        ->label('Current Stock')
+                                                        ->numeric()
+                                                        ->default($record->stock)
+                                                        ->required(),
+                                                ];
+                                            })
                                             ->action(fn(array $data, Model $record) => $record->update(['stock' => $data['stock']]))
                                     ),
                             ]),
                         
-                        ImageEntry::make('sku_image_dir')
+                            ImageEntry::make('sku_image_dir')
                             ->label('SKU Image')
-                            ->disk('public')
-                            ->size('small')
-                            ->extraImgAttributes(['class' => 'rounded-lg border border-gray-200']),
+                            ->size(250)
+                            ->width(500)
+                            ->extraImgAttributes(['class' => 'rounded-lg border border-gray-200'])
+                            ->hintAction(
+                                Action::make('updateImage')
+                                    ->icon('heroicon-m-pencil-square')
+                                    ->tooltip('Update SKU Image')
+                                    ->modalHeading('Update SKU Image')
+                                    ->form(fn(Model $record) => [
+                                        FileUpload::make('sku_image_dir')
+                                            ->label('Upload New Image')
+                                            ->disk('public')
+                                            ->directory('sku_images')
+                                            ->image()
+                                            ->previewable(true)
+                                            ->required(),
+                                    ])
+                                    ->action(fn(array $data, Model $record) => $record->update(['sku_image_dir' => $data['sku_image_dir']]))
+                            ),                        
                     ])
                     ->collapsible(),
                     
@@ -149,7 +169,7 @@ class ViewProductsSKU extends ViewRecord
                             ->visible(fn($record) => !empty($record->last_stock_update)),
                     ])
                     ->collapsed()
-                    ->columns(3),
+                    ->columns(2),
             ]);
     }
 }

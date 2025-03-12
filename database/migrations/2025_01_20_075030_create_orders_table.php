@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('is_paid')->default(false);
             $table->string('payment_method')->nullable();
             $table->enum('order_status', ['pending','processing', 'shipped', 'in_transit' , 'delivered', 'cancelled'])->default('pending');
+            
             $table->timestamps();
         });
     }
