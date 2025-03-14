@@ -16,6 +16,7 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Repeater;
 use App\Models\ProductsAttributesValues;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\Summarizers\Sum;
 use App\Filament\Resources\OrderResource\Pages;
 
 class OrderResource extends Resource
@@ -243,6 +244,10 @@ class OrderResource extends Resource
                     ->dateTime('F j, Y - g:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                    Tables\Columns\TextColumn::make('amount')
+                    ->summarize(Sum::make()->label('Total'))
+    
             ])
             ->filters([
                 // Add filters if needed
