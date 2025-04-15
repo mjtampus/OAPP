@@ -6,8 +6,10 @@ namespace App\Models;
 use Filament\Panel;
 use App\Models\Carts;
 use App\Models\Order;
+use App\Models\Comments;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -61,6 +63,10 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return str_ends_with($this->email, 'admin@admin.com');
+    }
+    public function comments() :HasMany
+    {
+        return $this->hasMany(Comments::class);
     }
 
 }

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Brand;
 use App\Models\Carts;
 use App\Models\Category;
+use App\Models\comments;
 use App\Models\ProductsSKU;
 use App\Models\ProductsAttributes;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +58,11 @@ class Products extends Model
     public function items() :HasMany
     {
         return $this->hasMany(OrderItems::class);
+    }
+
+    public function comments() :HasMany
+    {
+        return $this->hasMany(comments::class);
     }
     
 }
