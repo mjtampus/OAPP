@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('products_id')->constrained();
-            $table->boolean('is_liked')->default(false);
+            // $table->boolean('is_liked')->default(false);
             $table->string('comment')->nullable();
             $table->timestamps();
         });

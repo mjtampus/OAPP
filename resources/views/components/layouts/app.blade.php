@@ -10,6 +10,8 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+
 </head>
 <body class="min-h-screen flex flex-col">
     
@@ -51,8 +53,9 @@
             </div>
         </div>
     </footer>
-    
+    @vite('resources/js/app.js')
     @livewireScripts
-    
+
+
 </body>
 </html>

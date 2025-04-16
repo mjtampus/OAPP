@@ -68,5 +68,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Comments::class);
     }
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'users.'.$this->id;
+    }
 
 }

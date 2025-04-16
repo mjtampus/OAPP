@@ -2,15 +2,38 @@
 
 namespace App\Livewire\Components;
 
+
 use Livewire\Component;
 
 class Toast extends Component
 {
     public $messages = [];
     public $showToast = true;
+    public int $authId;
     
     protected $listeners = ['notify' => 'addMessage'];
 
+    public function mount()
+    {
+        $this->authId = auth()->id() ?? 0;
+    }
+    public function getListeners()
+    {
+        return [
+            'notify' => 'addMessage',
+            "echo-private:App.Models.User.{$this->authId},comment.liked" => 'handleCommentLiked',
+        ];
+    }
+    public function handleCommentLiked($payload)
+    {
+        logger('🔥 Comment Liked Payload', $payload);
+    
+        $this->addMessage([
+            'message' => "💬 Your comment was liked by {$payload['liker_name']}",
+            'type' => 'success',
+            'duration' => 4000,
+        ]);
+    }
     public function addMessage($data)
     {
         $this->messages[] = [

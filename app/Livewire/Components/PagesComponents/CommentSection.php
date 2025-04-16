@@ -2,10 +2,14 @@
 
 namespace App\Livewire\Components\PagesComponents;
 
+use Dom\Comment;
 use App\Models\Replies;
 use Livewire\Component;
 use App\Models\Comments;
 use App\Models\CommentLikes;
+use App\Events\CommentLikedEvent;
+use App\Notifications\CommentLikedNotification;
+// use App\Notifications\CommentLikedNotification;
 
 class CommentSection extends Component
 {
@@ -20,7 +24,7 @@ class CommentSection extends Component
     public function mount($productId)
     {
         $this->productId = $productId;
-        $this->user = auth()->user()->load('comments');
+        // $this->user = auth()->user()->load('comments');
         // dd($this->user);
         $this->refreshComments();        
     }
@@ -101,6 +105,13 @@ class CommentSection extends Component
         
         session()->flash('message', 'Reply added successfully!');
     }
+
+    public function getUserLikedComment($commentId)
+    {
+        $comment = Comments::find($commentId);
+
+        return $comment->user;
+    }
     
     public function likeComment($commentId)
     {
@@ -116,6 +127,26 @@ class CommentSection extends Component
                 'user_id' => auth()->user()->id,
                 'like_status' => 'like',
             ]);
+
+            $fetchLikedComment = $this->getUserLikedComment($commentId);
+            $liker = auth()->user();
+
+            if ($fetchLikedComment->id == auth()->user()->id) {
+                
+                $this->dispatch('notify', [
+                    'type' => 'success',
+                    'message' => 'You like your own comment',
+                ]);    
+            }else {
+                event(new CommentLikedEvent(auth()->user(), $fetchLikedComment->id, $commentId));
+                // $fetchLikedComment->notify(new CommentLikedNotification($liker, $commentId));
+
+                $this->dispatch('notify', [
+                    'type' => 'success',
+                    'message' => 'You like ' . $fetchLikedComment->name . ' comment',
+                ]);
+            }
+
         }
         else {
             CommentLikes::where('comments_id', $commentId)->where('user_id', auth()->user()->id)->delete();
