@@ -64,5 +64,12 @@ class Products extends Model
     {
         return $this->hasMany(comments::class);
     }
-    
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+    public function generateSlug(){
+        
+        $slug = Str::slug($this->name);
+    } 
 }

@@ -11,8 +11,6 @@ class Toast extends Component
     public $showToast = true;
     public int $authId;
     
-    protected $listeners = ['notify' => 'addMessage'];
-
     public function mount()
     {
         $this->authId = auth()->id() ?? 0;
@@ -21,7 +19,7 @@ class Toast extends Component
     {
         return [
             'notify' => 'addMessage',
-            "echo-private:App.Models.User.{$this->authId},comment.liked" => 'handleCommentLiked',
+            "echo-private:App.Models.User.{$this->authId},CommentLikedEvent" => 'handleCommentLiked',
         ];
     }
     public function handleCommentLiked($payload)
@@ -29,7 +27,7 @@ class Toast extends Component
         logger('🔥 Comment Liked Payload', $payload);
     
         $this->addMessage([
-            'message' => "💬 Your comment was liked by {$payload['liker_name']}",
+            'message' => "{$payload['liker_name']} liked your comment",
             'type' => 'success',
             'duration' => 4000,
         ]);

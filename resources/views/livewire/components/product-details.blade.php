@@ -156,5 +156,5 @@
         </div>
     </div>
 
-    <livewire:components.pages-components.comment-section :productId="$productId" />
-</div>
+    <livewire:components.pages-components.comment-section :productId="$product->id" />
+    </div>

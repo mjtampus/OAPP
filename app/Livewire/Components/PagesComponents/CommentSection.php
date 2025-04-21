@@ -17,15 +17,12 @@ class CommentSection extends Component
     public $productId;
     public $replyComment = '';
     public $replyingTo = '';
-    public $user;
     public $comments;
     public $likes;
 
     public function mount($productId)
     {
         $this->productId = $productId;
-        // $this->user = auth()->user()->load('comments');
-        // dd($this->user);
         $this->refreshComments();        
     }
 
@@ -138,9 +135,7 @@ class CommentSection extends Component
                     'message' => 'You like your own comment',
                 ]);    
             }else {
-                event(new CommentLikedEvent(auth()->user(), $fetchLikedComment->id, $commentId));
-                // $fetchLikedComment->notify(new CommentLikedNotification($liker, $commentId));
-
+                event(new CommentLikedEvent($liker, $fetchLikedComment->id, $commentId));
                 $this->dispatch('notify', [
                     'type' => 'success',
                     'message' => 'You like ' . $fetchLikedComment->name . ' comment',

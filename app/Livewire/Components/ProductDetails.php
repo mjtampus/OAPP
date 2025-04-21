@@ -14,8 +14,7 @@ use App\Models\ProductsAttributesValues;
 #[Title('Products')]
 class ProductDetails extends Component
 {
-    public $productId;
-    public $product;
+    public Products $product;
     public $skus = [];
     public $colors = [];
     public $sizes = [];
@@ -26,9 +25,9 @@ class ProductDetails extends Component
     public $selectedSkuVariant = null;
     public $quantity = 1;
 
-    public function mount($productId)
+    public function mount(Products $product)
     {
-        $this->product = Products::with('sku')->find($productId);
+        $this->product = $product;
         $this->loadVariations();
     }
 
@@ -94,7 +93,6 @@ class ProductDetails extends Component
     {
         $this->selectedColor = [$attributeId, $valueId , $Value ]; 
         $this->updateSelectedSkuVariant();
-
     }
     
     public function selectSize($attributeId , $valueId, $Value )
@@ -172,10 +170,7 @@ class ProductDetails extends Component
             'message' => 'Cart added successfully',
             'type' => 'success'
         ]);
-    }
-    
-    
-    
+    }    
     private function updateSelectedSkuVariant()
     {
         if (!$this->selectedColor || !$this->selectedSize) {

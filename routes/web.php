@@ -24,7 +24,7 @@ Route::get('/shop',Shop::class)->lazy()->name('shop');
 Route::get('/cart',Cart::class)->lazy()->name('cart');
 Route::get('/login',Login::class)->lazy()->name('login');
 Route::get('/checkout' ,Checkout::class)->name('checkout')->middleware('auth'); 
-Route::get('/product/{productId}', ProductDetails::class)->name('product.details');
+Route::get('/product/{product:slug}', ProductDetails::class)->name('product.details');
 
 Route::get('payment/{id}/{gateway}',[PaymentController::class,'payment'])->name('payment');
 Route::get('payment-sucess',[PaymentController::class,'paymentSuccess'])->name('payment.success');

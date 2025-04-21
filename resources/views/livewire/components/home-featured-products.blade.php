@@ -9,7 +9,7 @@
                 <h3 class="text-xl font-semibold mb-2">{{ $product->name }}</h3>
                 <div class="flex justify-between items-center">
                     <p class="text-blue-600 font-bold">₱{{ number_format($product->price) , 2}}</p>
-                    <a href="/product/{{ $product->id }}" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
+                    <a href="/product/{{ $product->slug }}" class="text-gray-600 hover:text-blue-600 transition-colors duration-300">
                         View Details →
                     </a>
                 </div>

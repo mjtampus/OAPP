@@ -28,12 +28,6 @@ class CommentLikedEvent implements ShouldBroadcastNow
     {
         return new PrivateChannel("App.Models.User.{$this->commentOwnerId}");
     }
-
-    public function broadcastAs()
-    {
-        return 'comment.liked';
-    }
-
     public function broadcastWith()
     {
         return [

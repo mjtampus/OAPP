@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->string('product_image_dir');
+            $table->string('slug');
             $table->foreignId('brand_id')->constrained('brands')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete()->nullable();
             $table->boolean('is_new_arrival')->default(false);

@@ -70,7 +70,6 @@ class User extends Authenticatable implements FilamentUser
     }
     public function receivesBroadcastNotificationsOn(): string
     {
-        return 'users.'.$this->id;
+        return 'App.Models.User.' . $this->id;
     }
-
 }

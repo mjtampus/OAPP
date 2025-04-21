@@ -152,7 +152,7 @@
                                 </div>
                                 <div class="mt-6 flex items-center justify-between">
                                     <span class="text-2xl font-bold text-gray-900">₱{{ number_format($product->price, 2) }}</span>
-                                    <a href="{{ route('product.details', ['productId' => $product->id]) }}"
+                                    <a href="{{ route('product.details', ['product' => $product->slug]) }}""
                                         class="px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200
                                             bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg">
                                         <span>View Details</span>
