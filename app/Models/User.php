@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Panel;
 use App\Models\Carts;
+use App\Models\Likes;
 use App\Models\Order;
 use App\Models\Comments;
 use Illuminate\Notifications\Notifiable;
@@ -68,8 +69,13 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(Comments::class);
     }
-    public function receivesBroadcastNotificationsOn(): string
+    // public function receivesBroadcastNotificationsOn(): string
+    // {
+    //     return 'App.Models.User.' . $this->id;
+    // }
+
+    public function like() :HasMany
     {
-        return 'App.Models.User.' . $this->id;
+        return $this->hasMany(Likes::class);
     }
 }

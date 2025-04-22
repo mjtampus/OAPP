@@ -117,53 +117,56 @@
                     @else
                     <!-- Products Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                        @foreach($products as $product)
-                        <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col h-full transform hover:-translate-y-1">
-                            <div class="relative">
-                                <img src="{{ Storage::url($product->product_image_dir) }}" alt="Product Image" class="w-full h-64 object-cover rounded-t-xl">
-                                <button wire:click="likeProduct({{ $product->id }})" 
-                                    class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:scale-110 transition-transform duration-200 group">
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                        class="h-6 w-6 text-gray-600 group-hover:text-red-500 transition-colors duration-200" 
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="p-6 flex flex-col flex-grow">
-                                <div class="flex gap-2 mb-3">
-                                    @if($product->is_featured)
-                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-800">
-                                        Featured
-                                    </span>
-                                    @endif
-                                    @if($product->is_new_arrival)
-                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">
-                                        New Arrival
-                                    </span>
-                                    @endif
-                                </div>
-                                <h3 class="text-xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
-                                    {{$product->name}}
-                                </h3>
-                                <div class="mt-3 text-sm text-gray-600 h-20 overflow-hidden">
-                                    {!! Str::limit($product->description, 150) !!}
-                                </div>
-                                <div class="mt-6 flex items-center justify-between">
-                                    <span class="text-2xl font-bold text-gray-900">₱{{ number_format($product->price, 2) }}</span>
-                                    <a href="{{ route('product.details', ['product' => $product->slug]) }}""
-                                        class="px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200
-                                            bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg">
-                                        <span>View Details</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            @foreach($products as $product)
+                            <div class="group bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-200 flex flex-col h-full transform hover:-translate-y-1">
+                                <div class="relative">
+                                    <img src="{{ Storage::url($product->product_image_dir) }}" alt="Product Image" class="w-full h-64 object-cover rounded-t-xl">
+                                    <button wire:click="likeProduct({{ $product->id }})" 
+                                        class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-md hover:scale-110 transition-transform duration-200 group">
+                                        @php
+                                            $liked = auth()->user()?->like()->where('products_id', $product->id)->exists();
+                                        @endphp
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-6 w-6 transition-colors duration-200 {{ $liked ? 'text-red-500 fill-red-500' : 'text-gray-600 group-hover:text-red-500' }}"
+                                            viewBox="0 0 24 24" fill="{{ $liked ? 'currentColor' : 'none' }}" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                         </svg>
-                                    </a>
+                                    </button>
+                                </div>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <div class="flex gap-2 mb-3">
+                                        @if($product->is_featured)
+                                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 text-green-800">
+                                            Featured
+                                        </span>
+                                        @endif
+                                        @if($product->is_new_arrival)
+                                        <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">
+                                            New Arrival
+                                        </span>
+                                        @endif
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors duration-200">
+                                        {{$product->name}}
+                                    </h3>
+                                    <div class="mt-3 text-sm text-gray-600 h-20 overflow-hidden">
+                                        {!! Str::limit($product->description, 150) !!}
+                                    </div>
+                                    <div class="mt-6 flex items-center justify-between">
+                                        <span class="text-2xl font-bold text-gray-900">₱{{ number_format($product->price, 2) }}</span>
+                                        <a href="{{ route('product.details', ['product' => $product->slug]) }}"
+                                            class="px-6 py-3 rounded-lg flex items-center space-x-2 transition-all duration-200
+                                                bg-purple-600 text-white hover:bg-purple-700 shadow-md hover:shadow-lg">
+                                            <span>View Details</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        @endforeach
+                            @endforeach
                     </div>
                     @endif
 

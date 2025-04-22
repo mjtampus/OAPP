@@ -19,6 +19,7 @@
             </a>
             <a href="/cart" class="text-gray-700 hover:text-blue-600 transition-colors duration-300 relative group flex items-center">
                 Cart
+                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
                 @if($cartCount > 0)
                 <span class="ml-1 bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
                     {{ $cartCount }}

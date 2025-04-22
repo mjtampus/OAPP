@@ -17,14 +17,16 @@ class CommentLikedNotification extends Notification implements ShouldBroadcastNo
 
     protected $liker;
     protected $commentId;
+    protected $commentOwnerId;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($liker, $commentId)
+    public function __construct($liker, $commentId ,$commentOwnerId)
     {
         $this->liker = $liker;
         $this->commentId = $commentId;
+        $this->commentOwnerId = $commentOwnerId;
     }
 
     /**
@@ -65,5 +67,12 @@ class CommentLikedNotification extends Notification implements ShouldBroadcastNo
         return [
             //
         ];
+    }
+
+    public function receivesBroadcastNotificationsOn()
+    {
+
+    return 'App.Models.User.' . $this->commentOwnerId;
+
     }
 }

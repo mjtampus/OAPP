@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('replies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('comments_id')->constrained();
+            $table->foreignId('comments_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained();
             $table->string('comment')->nullable();
             $table->boolean('is_liked')->default(false);

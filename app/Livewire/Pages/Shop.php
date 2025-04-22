@@ -3,6 +3,7 @@
 namespace App\Livewire\Pages;
 
 use App\Models\Brand;
+use App\Models\Likes;
 use Livewire\Component;
 use App\Models\Category;
 use App\Models\Products;
@@ -96,10 +97,22 @@ class Shop extends Component
             return redirect(route('login'));
         }
         else if (Auth::id() !== 1) {
-            $user->like($product);
+            if(Likes::where('user_id', $user->id)->where('products_id', $product->id)->exists()) 
+            {
+                Likes::where('user_id', $user->id)->where('products_id', $product->id)->delete();
+                $this->dispatch('notify', [
+                    'message' => $product->name . ' removed to your favorites',
+                    'type' => 'success'
+                ]);
+                return;
+            }
+            Likes::create([
+                'user_id' => $user->id,
+                'products_id' => $product->id
+            ]);
             $this->dispatch('product-liked', ['productId' => $productId]);
             $this->dispatch('notify', [
-                'message' => 'Product liked successfully',
+                'message' => $product->name .' Added to your favorites',
                 'type' => 'success'
             ]);
         } else {

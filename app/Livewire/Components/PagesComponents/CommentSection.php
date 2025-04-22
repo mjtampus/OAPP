@@ -6,8 +6,11 @@ use Dom\Comment;
 use App\Models\Replies;
 use Livewire\Component;
 use App\Models\Comments;
+use App\Events\ReplyEvent;
 use App\Models\CommentLikes;
+use App\Events\CommentEvents;
 use App\Events\CommentLikedEvent;
+use Illuminate\Support\Facades\Auth;
 use App\Notifications\CommentLikedNotification;
 // use App\Notifications\CommentLikedNotification;
 
@@ -19,6 +22,25 @@ class CommentSection extends Component
     public $replyingTo = '';
     public $comments;
     public $likes;
+    public int $authId ;
+    public $expandedComments = [];
+
+    public $editingCommentId = null;
+    public $editingReplyId = null;
+    public $editCommentText;
+    public $editReplyText;
+    
+
+    public function getListeners()
+    {   
+        $this->authId = auth()->id() ?? 0;
+        return [
+        "echo-private:App.Models.User.{$this->authId},CommentLikedEvent" => 'refreshComments',
+        "echo-private:App.Models.User.{$this->authId},ReplyEvent" => 'refreshComments',
+        "echo:CommentRefresh,CommentEvents" => 'refreshComments',
+        'confirmedDelete','ConfirmDeleteReply',
+        ];
+    }
 
     public function mount($productId)
     {
@@ -37,6 +59,7 @@ class CommentSection extends Component
     {
         $this->comments = Comments::where('products_id', $this->productId)->with('user' , 'replies.user', 'likes')->get()->toArray();
         // dd($this->comments);
+
     }
     
     public function startReply($commentId)
@@ -67,9 +90,7 @@ class CommentSection extends Component
         ]);
 
         $this->newComment = ''; // Clear the input
-
-        $this->refreshComments();
-        
+        event(new CommentEvents());
         session()->flash('message', 'Comment added successfully!');
     }
     
@@ -99,8 +120,7 @@ class CommentSection extends Component
         
         $this->replyingTo = null;
         $this->replyComment = '';
-        
-        session()->flash('message', 'Reply added successfully!');
+        event(new CommentEvents());
     }
 
     public function getUserLikedComment($commentId)
@@ -134,7 +154,7 @@ class CommentSection extends Component
                     'type' => 'success',
                     'message' => 'You like your own comment',
                 ]);    
-            }else {
+            }else {                
                 event(new CommentLikedEvent($liker, $fetchLikedComment->id, $commentId));
                 $this->dispatch('notify', [
                     'type' => 'success',
@@ -147,7 +167,7 @@ class CommentSection extends Component
             CommentLikes::where('comments_id', $commentId)->where('user_id', auth()->user()->id)->delete();
         }
  
-        $this->refreshComments();
+        event(new CommentEvents());
     }
 
     public function likeReply($replyId)
@@ -167,9 +187,153 @@ class CommentSection extends Component
                 'is_liked' => false,
             ]);
         }
-        $this->refreshComments();
+        event(new CommentEvents());
 
     }
+    public function expandReplies($commentId)
+    {
+        $this->expandedComments[$commentId] = true;
+    }
+    
+    // Method to collapse replies for a comment
+    public function collapseReplies($commentId)
+    {
+        $this->expandedComments[$commentId] = false;
+    }
+
+    public function startEditingComment($commentId)
+    {
+        $comment = Comments::findOrFail($commentId);
+        
+        // Check if the user owns this comment
+        if ($comment->user_id !== Auth::id()) {
+            return;
+        }
+        
+        $this->editingCommentId = $commentId;
+        $this->editCommentText = $comment->comment;
+        
+        // Reset any other editing state
+        $this->editingReplyId = null;
+        $this->replyingTo = null;
+    }
+    
+    // Start editing a reply
+    public function startEditingReply($replyId)
+    {
+        $reply = Replies::findOrFail($replyId);
+        
+        // Check if the user owns this reply
+        if ($reply->user_id !== Auth::id()) {
+            return;
+        }
+        
+        $this->editingReplyId = $replyId;
+        $this->editReplyText = $reply->comment;
+        
+        // Reset any other editing state
+        $this->editingCommentId = null;
+        $this->replyingTo = null;
+    }
+    
+    // Cancel editing
+    public function cancelEditing()
+    {
+        $this->reset(['editingCommentId', 'editingReplyId', 'editCommentText', 'editReplyText']);
+    }
+    
+    // Update comment
+    public function updateComment($commentId)
+    {
+        $comment = Comments::findOrFail($commentId);
+        
+        // Check if the user owns this comment
+        if ($comment->user_id !== Auth::id()) {
+            return;
+        }
+        
+        $this->validate([
+            'editCommentText' => 'required|min:2',
+        ]);
+        
+        $comment->update([
+            'comment' => $this->editCommentText,
+        ]);
+        
+        $this->cancelEditing();
+        $this->refreshComments();
+        session()->flash('message', 'Comment updated successfully!');
+    }
+    
+    // Update reply
+    public function updateReply($replyId)
+    {
+        $reply = Replies::findOrFail($replyId);
+        
+        // Check if the user owns this reply
+        if ($reply->user_id !== Auth::id()) {
+            return;
+        }
+        
+        $this->validate([
+            'editReplyText' => 'required|min:2',
+        ]);
+        
+        $reply->update([
+            'comment' => $this->editReplyText,
+        ]);
+        
+        $this->cancelEditing();
+        $this->refreshComments();
+
+        session()->flash('message', 'Reply updated successfully!');
+    }
+    
+    // Delete comment
+    public function deleteComment($commentId)
+    {
+        if ($commentId) {
+            $this->dispatch('openModal', 'Are you sure you want to delete this comment?', 'confirmedDelete', $commentId);
+        }
+    }
+
+    public function confirmedDelete($commentId)
+    {
+        $comment = Comments::findOrFail($commentId);
+
+        // Check if the user owns this comment
+        if ($comment->user_id !== Auth::id()) {
+            return;
+        }
+
+        // Delete the comment
+        $comment->delete();
+        $this->refreshComments();
+        session()->flash('message', 'Comment deleted successfully!');
+    }
+    
+    // Delete reply
+    public function deleteReply($replyId)
+    {
+        if ($replyId) {
+            $this->dispatch('openModal', 'Are you sure you want to delete this reply?', 'ConfirmDeleteReply', $replyId);
+        }
+    }
+    public function ConfirmDeleteReply($replyId)
+    {
+        $reply = Replies::findOrFail($replyId);
+        
+        // Check if the user owns this reply
+        if ($reply->user_id !== Auth::id()) {
+            return;
+        }
+        
+        // Delete the reply
+        $reply->delete();
+        $this->refreshComments();
+        session()->flash('message', 'Reply deleted successfully!');
+    }
+
     public function render()
     {
         return view('livewire.components.pages-components.comment-section');
