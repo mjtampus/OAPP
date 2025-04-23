@@ -38,6 +38,11 @@ class ShopHeaderNavigation extends Component
 
         return redirect(route('login'));
     }
+
+    public function showOrders()
+    {
+        $this->dispatch('toggleOrdersSidebar');
+    }
     public function render()
     {
         return view('livewire.components.shop-header-navigation');

@@ -1,4 +1,4 @@
-<nav x-data="{ mobileMenuOpen: false }" class="bg-white/70 backdrop-blur-md shadow-lg py-4 sticky top-0 z-50 transition-all duration-300">
+<nav x-data="{ mobileMenuOpen: false }" class="bg-white/70 backdrop-blur-md shadow-lg py-4 sticky top-0 z-20 transition-all duration-300">
     <div class="container mx-auto flex justify-between items-center px-6">
         <!-- Logo on the left -->
         <div class="flex-1">
@@ -43,6 +43,7 @@
                 <!-- Notification Dropdown -->
                 <div 
                     x-show="notificationOpen" 
+                    x-cloak
                     x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="opacity-0 scale-95"
                     x-transition:enter-end="opacity-100 scale-100"
@@ -85,6 +86,7 @@
                 </button>
                 <div 
                 x-show="open" 
+                x-cloak
                 x-transition:enter="transition ease-out duration-100"
                 x-transition:enter-start="opacity-0 scale-95"
                 x-transition:enter-end="opacity-100 scale-100"
@@ -94,7 +96,7 @@
                 class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
 
                 <a href="/account" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">My Account</a>
-                <a href="/orders" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Orders</a>
+                <a href="#" wire:click.prevent="showOrders" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Orders</a>
                 <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600">Settings</a>
                 <div class="border-t my-1"></div>
                 <a wire:click.prevent="logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-600 cursor-pointer" wire:loading.attr="disabled">
@@ -120,6 +122,7 @@
 
     <!-- Mobile Menu -->
     <div x-show="mobileMenuOpen" 
+         x-cloak
          x-transition:enter="transition ease-out duration-200"
          x-transition:enter-start="opacity-0 -translate-y-2"
          x-transition:enter-end="opacity-100 translate-y-0"
@@ -138,10 +141,7 @@
             </a>
             
             <!-- Mobile Notification Link -->
-            <a href="/notifications" class="flex items-center justify-between py-2 text-gray-700 hover:text-blue-600" @click="mobileMenuOpen = false">
-                <span>Notifications</span>
-                <span class="bg-red-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">3</span>
-            </a>
+
             
             @auth
             <div class="border-t pt-2">

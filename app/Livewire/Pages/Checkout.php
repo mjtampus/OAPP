@@ -132,7 +132,7 @@ class Checkout extends Component
                 'id' => $cart['id'],
                 'cart_id' => $cart['cart_id'], // SKU ID
                 'product_id' => $product->id,
-                'sku_id' => $cart['id'],
+                'sku_id' => $cart['sku_id'],
                 'price' => $sku->price,
                 'image' => $sku->sku_image_dir,
                 'name' => $product->name,

@@ -36,11 +36,20 @@
        <!-- Main Page Content -->
        {{ $slot }}
    </div>
+
    
     </div>
 
     <div class="alert-modal" >
         <livewire:components.alertModal />
+    </div>
+
+    <div class="order-sidebar">
+        <livewire:components.order-sidebar />
+    </div>
+
+    <div class="order-item-sidebar">
+        <livewire:components.order-item-sidebar />
     </div>
     
     <footer class="bg-gray-900 text-gray-400 py-12">
