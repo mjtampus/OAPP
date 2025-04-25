@@ -7,18 +7,23 @@ use App\Models\Carts;
 use App\Models\Category;
 use App\Models\comments;
 use App\Models\ProductsSKU;
+use Illuminate\Support\Str;
+use Spatie\Sluggable\HasSlug;
 use App\Models\ProductsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Sluggable\SlugOptions;
 
 class Products extends Model
 {
     use HasFactory;
+    use HasSlug;
 
     protected $fillable = [
         'name',
+        'slug',
         'description',
         'product_image_dir',
         'brand_id',
@@ -71,5 +76,11 @@ class Products extends Model
     public function generateSlug(){
         
         $slug = Str::slug($this->name);
-    } 
+    }
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('name')
+            ->saveSlugsTo('slug');
+    }
 }

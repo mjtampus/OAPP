@@ -10,8 +10,10 @@ use Stripe\StripeClient;
 use App\Models\ProductsSKU;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+
 
 class PaymentController extends Controller
 {
@@ -55,29 +57,36 @@ private function payViaStripe($orderedItems, $gateway, $orderId)
     $stripe = new StripeClient(env('STRIPE_SECRET'));
     $referenceNumber = Str::random(10);
 
-    $lineItems = [];
+    $fetchOrder = Order::findOrFail($orderId);
 
-    foreach ($orderedItems as $item) {
-        $lineItems[] = [
+    // Format product list with line breaks
+    $productList = collect($orderedItems)->map(function ($item) {
+        return $item['name'] . ' (' . $item['quantity'] . 'x)';
+    })->implode(",\n");
+
+    $description = "Payment for\n\nItems:\n" . $productList;
+
+    $lineItems = [
+        [
             'price_data' => [
                 'currency' => 'php',
                 'product_data' => [
-                    'name' => $item['name'],
-                    'description' => strip_tags($item['description']),
-                    'images' => $item['image'] ? [url($item['image'])] : [], // Handle missing images
+                    'name' => $fetchOrder->order_number,
+                    'description' => $description,
+                    'images' => [],
                 ],
-                'unit_amount' => $item['price'] * 100, // Stripe requires the amount in cents
+                'unit_amount' => $fetchOrder->amount * 100,
             ],
-            'quantity' => $item['quantity'],
-        ];
-    }
+            'quantity' => 1,
+        ]
+    ];
 
     $checkout_session = $stripe->checkout->sessions->create([
         'line_items' => $lineItems,
         'mode' => 'payment',
         'success_url' => route('payment.success', ['id' => $orderId, 'gateway' => $gateway]),
-        'cancel_url' => route('payment.cancel', ['gateway' => $gateway]),
-        'customer_email' => auth()->user()->email, // Ensure the user is authenticated
+        'cancel_url' => route('payment.cancel', ['id' => $orderId, 'gateway' => $gateway]),
+        'customer_email' => auth()->user()->email,
         'metadata' => [
             'customer_name' => auth()->user()->name ?? 'Guest',
             'reference_number' => $referenceNumber,
@@ -120,7 +129,7 @@ private function payViaPaymongo($orderedItems, $gateway, $orderId)
                 "line_items" => $lineItems,
                 "payment_method_types" => [$item['payment_method'], "qrph"], // Adjust payment method dynamically if needed
                 "success_url" => route('payment.success', ['id' => $orderId, 'gateway' => $gateway]),
-                "cancel_url" => route('payment.cancel', ['gateway' => $gateway]),
+                "cancel_url" => route('payment.cancel', ['id' => $orderId, 'gateway' => $gateway]),
                 "reference_number" => $referenceNumber,
                 "description" => "Order Payment"
             ]
@@ -225,6 +234,7 @@ public function paymentSuccess(Request $request)
 
 public function paymentCancel(Request $request)
 {
+    $orderId = $request->query('id');
     $gateway = $request->query('gateway');
 
     if ($gateway === "paymongo") {
@@ -241,6 +251,14 @@ public function paymentCancel(Request $request)
         if ($response->successful()) {
 
             session()->forget('paymongo_sessionId');
+            $order = Order::find($orderId);
+
+            if ($order) {
+                $order->update(['is_paid' => false]);
+                $order->update(['order_status' => 'cancelled']);
+            }
+
+            \Log::info('Payment cancelled for order ID: ' . $orderId);
 
         }
 
@@ -251,8 +269,13 @@ public function paymentCancel(Request $request)
     
         $response = $stripe->checkout->sessions->expire($sessionId);
 
-        $responseData = $response->toArray(); 
-        session()->forget('paymongo_sessionId');
+        $order = Order::find($orderId);
+
+        if ($order) {
+            $order->update(['is_paid' => false,
+                            'order_status' => 'cancelled']);
+        }
+        session()->forget('stripe_checkout_id');
     }
 
     else{

@@ -25,15 +25,16 @@
                                         <div class="ml-4">
                                             <h3 class="font-medium text-gray-900">{{ $item['name'] }}</h3>
                                             <p class="text-gray-600 mt-1">₱{{ number_format($item['price'], 2) }}</p>
+                                        
                                         </div>
                                     </div>
                                     
                                     <div class="flex items-center space-x-4">
                                         <div class="flex items-center">
                                             <button 
-                                                wire:click="decrementQuantity({{ $item['sku_id'] }})" 
+                                                wire:click="decrementQuantity({{ $item['id'] }})" 
                                                 class="w-8 h-8 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-100"
-                                                {{ $item['quantity'] <= 1 ? 'disabled' : '' }}
+                                                
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
@@ -43,7 +44,7 @@
                                             <span class="w-10 text-center text-gray-800">{{ $item['quantity'] }}</span>
                                             
                                             <button 
-                                                wire:click="incrementQuantity({{ $item['sku_id'] }})" 
+                                                wire:click="incrementQuantity({{ $item['id'] }})" 
                                                 class="w-8 h-8 rounded-full flex items-center justify-center border border-gray-300 hover:bg-gray-100"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -53,7 +54,7 @@
                                         </div>
                                         
                                         <button 
-                                            wire:click="removeItem({{ $item['sku_id'] }})"
+                                            wire:click="removeItem({{ $item['id'] }})"
                                             wire:loading.attr="disabled"
                                             class="text-red-500 hover:text-red-700 transition"
                                         >

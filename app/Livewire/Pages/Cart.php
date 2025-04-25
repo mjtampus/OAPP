@@ -265,6 +265,8 @@ class Cart extends Component
             }
             Session::put('cart-checkout', $this->selectedCartProducts);
 
+            // dd($this->selectedCartProducts);
+
             return redirect(route('checkout')); // Redirect logged-in users to checkout
         } 
         return redirect(route('login')); 

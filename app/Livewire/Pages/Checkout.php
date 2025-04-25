@@ -56,6 +56,10 @@ class Checkout extends Component
     public function mount()
     {
         // Fetch cart items from session or database
+        if (empty(Session::get('cart-checkout'))) {
+           return redirect(route('cart'));
+        }
+        
         $this ->getUser();
         $this->loadCartItems();
         $this->calculateTotals();
@@ -86,6 +90,7 @@ class Checkout extends Component
                     break;
                 }
             }
+            $this->loadCartItems();
             return $this->calculateTotals();
         }
         
@@ -104,8 +109,12 @@ class Checkout extends Component
                     break;
                 }
             }
+            $this->loadCartItems();
             return $this->calculateTotals();
         }
+     else {
+        $this->removeItem($cartId);
+    }
     }
     
     public function loadCartItems()
@@ -117,7 +126,7 @@ class Checkout extends Component
         $cartCheckout = Session::get('cart-checkout', []);
         $cartID = collect($cartCheckout)->pluck('id');
        
-        $cartCheckout = Carts::whereIn('sku_id', $cartID)->get();
+        $cartCheckout = Carts::whereIn('sku_id', $cartID)->where('user_id', Auth::id())->get();
     
         foreach ($cartCheckout as $cart) {
             // Find product and SKU from database
@@ -138,7 +147,8 @@ class Checkout extends Component
                 'name' => $product->name,
                 'quantity' => $cart['quantity'] ?? 1, // Default to 1 if not set
             ];
-        }    
+        }
+        // dd($this->cartItems);
     }
     
     
@@ -151,28 +161,19 @@ class Checkout extends Component
         $this->tax = $this->subtotal * 0.08; // 8% tax
         $this->shipping = 15.00;
         $this->total = $this->subtotal + $this->tax + $this->shipping;
+
     }
     
-    public function updateQuantity($itemId, $newQuantity)
-    {
-        if ($newQuantity > 0) {
-            foreach ($this->cartItems as $index => $item) {
-                if ($item['id'] == $itemId) {
-                    $this->cartItems[$index]['quantity'] = $newQuantity;
-                    break;
-                }
-            }
-            $this->calculateTotals();
-        }
-    }
     public function removeItem($itemId)
-{
+    {
     // Get the current cart from session
     $cartCheckout = Session::get('cart-checkout', []);
 
     // Filter out the item with the given ID
     $updatedCart = array_filter($cartCheckout, function ($item) use ($itemId) {
-        return $item['id'] != $itemId; // Keep items that don't match the given ID
+        return $item['cart_id'] != $itemId;
+        
+// Keep items that don't match the given ID
     });
 
     // Reindex the array (optional)
@@ -197,11 +198,9 @@ public function placeOrder()
         return redirect()->back()->with('error', 'Your cart is empty.');
     }
 
-    $totalAmount = collect($this->cartItems)->sum(fn ($item) => $item['price'] * $item['quantity']);
-    $productsQuantity = collect($this->cartItems)->count();
     $order = Order::create([
         'user_id' => auth()->user()->id,
-        'amount' => $totalAmount,
+        'amount' => $this->total,
         'order_number' => 'ORD#'. rand(1000, 9999), 
         // 'order_name' => auth()->user()->name,
         // 'order_description' => 'Example Description',
