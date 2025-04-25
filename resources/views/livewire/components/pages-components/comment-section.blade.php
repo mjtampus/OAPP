@@ -9,24 +9,31 @@
     
     <!-- Add Comment Form -->
     <div class="mb-8">
-        <form wire:submit.prevent="addComment" class="space-y-4">
-            <div>
-                <label for="comment" class="block text-sm font-medium text-gray-700">Add a comment</label>
-                <div class="mt-1">
-                    <textarea 
-                        id="comment" 
-                        wire:model.defer="newComment" 
-                        rows="3" 
-                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                        placeholder="Share your thoughts..."></textarea>
+        @auth
+            <form wire:submit.prevent="addComment" class="space-y-4">
+                <div>
+                    <label for="comment" class="block text-sm font-medium text-gray-700">Add a comment</label>
+                    <div class="mt-1">
+                        <textarea 
+                            id="comment" 
+                            wire:model.defer="newComment" 
+                            rows="3" 
+                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            placeholder="Share your thoughts...">
+                        </textarea>
+                    </div>
                 </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Post Comment
+                    </button>
+                </div>
+            </form>
+        @else
+            <div class="bg-gray-50 rounded-md p-4 border border-gray-200">
+                <p class="text-gray-700">Please <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">login first</a> to comment.</p>
             </div>
-            <div class="flex justify-end">
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Post Comment
-                </button>
-            </div>
-        </form>
+        @endauth
     </div>
     
     <!-- Comments List -->
