@@ -9,10 +9,12 @@ use App\Models\Category;
 use App\Models\Products;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 #[Title('Shop')]
+#[Layout('components.layouts.app')]
 class Shop extends Component
 {
     use WithPagination;
@@ -124,7 +126,7 @@ class Shop extends Component
     {
         return view('livewire.pages.shop', [
             'products' => $this->getProducts()
-        ])->layout('components.layouts.app');
+        ]);
     }
 
     public function resetFilters()

@@ -8,6 +8,7 @@ use App\Models\Products;
 use App\Models\ProductsSKU;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use App\Models\ProductsAttributes;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\ProductsAttributesValues;
 
 #[Title('Shopping Cart')]
+#[Layout('components.layouts.app')]
 class Cart extends Component
 {
     public $selectAll = false;

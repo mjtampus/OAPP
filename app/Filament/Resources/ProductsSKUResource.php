@@ -52,7 +52,6 @@ class ProductsSKUResource extends Resource
                 TextColumn::make('attributes')
                     ->label('Variations')
                     ->sortable()
-                    ->searchable()
                     ->formatStateUsing(function ($state) {
                         // Fix format if stored as a string
                         $state = '[' . $state . ']';

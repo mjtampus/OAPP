@@ -5,10 +5,12 @@ namespace App\Livewire\Pages;
 use App\Models\User;
 use App\Models\Carts;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
+#[Title('login')]
 class Login extends Component
 {
     public $name;
@@ -25,8 +27,6 @@ class Login extends Component
 
         if (Auth::attempt(['email' => $this->email, 'password' => $this->password])){
             session()->regenerate();
-
-            $user = auth()->user();
 
             return redirect()->route('home');
         }
@@ -91,6 +91,6 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.pages.login')->layout('components.layouts.app')->title('Login');
+        return view('livewire.pages.login')->layout('components.layouts.app');
     }
 }

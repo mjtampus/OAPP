@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\User;
 use App\Models\Carts;
 use App\Models\Order;
 use Livewire\Component;
@@ -70,7 +71,8 @@ class Checkout extends Component
             return redirect(route('login'));
         }else{
 
-            $user = auth()->user();
+             /** @var User $user */
+            $user = Auth::user();
             $this->email = $user->email;
             $this->firstName = $user->name;        }
     }
@@ -78,7 +80,6 @@ class Checkout extends Component
     public function incrementQuantity($cartId)
     {   
         $updateCart = Carts::find($cartId);
-
 
         if ($updateCart) {
             $updateCart->increment('quantity');
@@ -173,7 +174,7 @@ class Checkout extends Component
     $updatedCart = array_filter($cartCheckout, function ($item) use ($itemId) {
         return $item['cart_id'] != $itemId;
         
-// Keep items that don't match the given ID
+    // Keep items that don't match the given ID
     });
 
     // Reindex the array (optional)
@@ -199,7 +200,7 @@ public function placeOrder()
     }
 
     $order = Order::create([
-        'user_id' => auth()->user()->id,
+        'user_id' => Auth::user()->id,
         'amount' => $this->total,
         'order_number' => 'ORD#'. rand(1000, 9999), 
         // 'order_name' => auth()->user()->name,

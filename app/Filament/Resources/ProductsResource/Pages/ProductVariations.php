@@ -22,17 +22,16 @@ class ProductVariations extends EditRecord
     {
         $types = $this->record->attributes;
         $fields = [];
-    
+        
         foreach ($types as $type) {
             $fields[] = TextInput::make('variation_type_' . $type->id . '.id')
                 ->hidden();
             $fields[] = TextInput::make('variation_type_' . $type->id . '.label')
                 ->label('Attribute Type');
-
             $fields[] = TextInput::make('variation_type_' . $type->id . '.name')
                 ->label('Attribute Value'); 
         }
-
+    
         return $form->schema([
             Repeater::make('variations')
                 ->collapsible()
@@ -44,7 +43,11 @@ class ProductVariations extends EditRecord
                         ->columns(2)
                         ->schema($fields),
                     Group::make([
-                        FileUpload::make('sku_image_dir')->label('Variant Image')->columnSpanFull(),
+                        FileUpload::make('sku_image_dir')
+                            ->label('Variant Image')
+                            ->columnSpanFull()
+                            ->image()  // This will show the image preview if one exists
+                            ->imagePreviewHeight('200px'),  // Optional: set a fixed height for image preview
                         TextInput::make('sku')->label('SKU')->disabled(),
                         TextInput::make('stock')->label('Stock')->numeric()->required(),
                         TextInput::make('price')->label('Price')->numeric()->required(),
@@ -52,6 +55,7 @@ class ProductVariations extends EditRecord
                 ])
         ]);
     }
+    
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
@@ -169,13 +173,16 @@ class ProductVariations extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            // Actions\DeleteAction::make(),
         ];
     }
 
     public static function getNavigationLabel(): string
     {
-        return 'SKU Variations';
+        return 'Generate Variations';
     }
-    
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-plus-circle';  // Using a Heroicons icon name.
+    }
 }

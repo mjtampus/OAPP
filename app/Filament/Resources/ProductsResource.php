@@ -231,9 +231,3 @@ class ProductsResource extends Resource
         ]);
     }
 }
-
-
-
-
-
-
