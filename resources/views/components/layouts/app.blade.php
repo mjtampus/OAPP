@@ -4,44 +4,61 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Page Title' }}</title>
-    
-    @vite('resources/css/app.css')
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body class="min-h-screen flex flex-col">
-    
+
     <!-- Global Loading Indicator -->
 
     
     <livewire:components.shop-header-navigation />
-    
+
     <div class="toastify">
         <livewire:components.toast />
     </div>
-    
+
     <div class="flex-grow relative">
         <div x-data="{ loading: false }"
         x-on:wire-navigate-start.window="loading = true"
         x-on:wire-navigate-end.window="loading = false">
-   
+
        <!-- Loading Overlay -->
        <div x-show="loading" class="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-50">
            <div class="animate-spin h-12 w-12 border-4 border-blue-500 border-t-transparent rounded-full"></div>
        </div>
-   
+
        <!-- Main Page Content -->
        {{ $slot }}
    </div>
+<<<<<<< Updated upstream
    
+=======
+
+
+>>>>>>> Stashed changes
     </div>
 
     <div class="alert-modal" >
         <livewire:components.alertModal />
     </div>
+<<<<<<< Updated upstream
     
+=======
+
+    <div class="order-sidebar">
+        <livewire:components.order-sidebar />
+    </div>
+
+    <div class="order-item-sidebar">
+        <livewire:components.order-item-sidebar />
+    </div>
+
+>>>>>>> Stashed changes
     <footer class="bg-gray-900 text-gray-400 py-12">
         <div class="container mx-auto px-6 text-center">
             <p class="mb-4">&copy; 2025 eCommerce. All rights reserved.</p>

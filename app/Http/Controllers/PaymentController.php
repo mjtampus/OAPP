@@ -13,6 +13,7 @@ class PaymentController extends Controller
 {
 //========================================================== PAYMENTS ==================================================================//
 
+<<<<<<< Updated upstream
     public function payment($id , string $gateway)
     {      
         $order = Order::findorFail($id);
@@ -22,6 +23,41 @@ class PaymentController extends Controller
             400,
             'Payment Gateway Not Supported or Order is paid'
         );
+=======
+public function payment($id, string $gateway)
+{
+    $order = Order::with('items.product', 'items.sku')->findOrFail($id); // Load order with related items
+    $gateway = strtolower($gateway);
+
+    abort_if(
+        !in_array($gateway, ['stripe', 'paymongo', 'cod']) || $order->is_paid,
+        400,
+        'Payment Gateway Not Supported or Order is already paid'
+    );
+
+    $orderedItems = [];
+
+    foreach ($order->items as $item) { // Loop through each order's items
+        $orderedItems[] = [
+            'user_id' => auth()->user()->email,
+            'id' => $order->id,
+            'name' => $item->product->name,
+            'description' => strip_tags($item->product->description),
+            'price' => $item->sku->price,
+            'quantity' => $item->quantity,
+            'image' => $item->sku->sku_image_dir ? Storage::url($item->sku->sku_image_dir) : null,
+            'amount' => $item->sku->price * $item->quantity, // Calculate total per item
+            'payment_method' => $order->payment_method,
+        ];
+    }
+
+    return match ($gateway) {
+        'stripe' => $this->payViaStripe($orderedItems, $gateway, $order->id),
+        'paymongo' => $this->payViaPaymongo($orderedItems, $gateway, $order->id),
+        'cod' => $this->payViaCod($order),
+    };
+}
+>>>>>>> Stashed changes
 
         return $gateway === 'stripe' ? $this->payViaStripe($order , $gateway) : $this->payViaPaymongo($order, $gateway);
     }
@@ -108,8 +144,12 @@ private function payViaStripe($order , $gateway)
         ])->post('https://api.paymongo.com/v1/checkout_sessions', $data);
         if ($response->successful()) {
 
+<<<<<<< Updated upstream
             $checkoutUrl = $response->json()['data']['attributes']['checkout_url'];
             $sessionId = $response->json()['data']['id'];
+=======
+    $apiKey = base64_encode(env('PAYMONGO_API_KEY'));
+>>>>>>> Stashed changes
 
             session(['paymongo_sessionId' => $sessionId]);
 
@@ -120,9 +160,24 @@ private function payViaStripe($order , $gateway)
 
     return redirect()->back()->with('error', $errorMessage);
 
+<<<<<<< Updated upstream
             }
     }
     
+=======
+private function payViaCod(Order $order)
+{
+    session(['cod_success' => true]);
+
+    $order->update([
+        'is_paid' => false,
+        'order_status' => 'pending',
+    ]);
+
+    return redirect()->route('order.success');
+}
+
+>>>>>>> Stashed changes
 //========================================================== SUCCESS PAYMENTS ==================================================================//
 
     public function paymentSuccess(Request $request)
@@ -167,14 +222,32 @@ private function payViaStripe($order , $gateway)
 
     }elseif($gateway === 'stripe') {
 
+<<<<<<< Updated upstream
+=======
+            return redirect()->route('order.success');
+        }
+    }
+    elseif ($gateway === 'stripe') {
+>>>>>>> Stashed changes
         $sessionId = session('stripe_checkout_id');
         $stripe = new StripeClient(env('STRIPE_SECRET'));
     
         $response = $stripe->checkout->sessions->retrieve($sessionId);
+<<<<<<< Updated upstream
+=======
+        $responseData = $response->toArray();
+
+        // session()->forget('stripe_checkout_id');
+>>>>>>> Stashed changes
 
         $responseData = $response->toArray(); 
 
+<<<<<<< Updated upstream
         session()->forget('stripe_checkout_id');
+=======
+        return redirect()->route('order.success');
+    }
+>>>>>>> Stashed changes
 
         Payment::create([
             'order_id' => $orderId,
@@ -219,7 +292,7 @@ public function paymentCancel(Request $request)
 
         $sessionId = session('stripe_checkout_id');
         $stripe = new StripeClient(env('STRIPE_SECRET'));
-    
+
         $response = $stripe->checkout->sessions->expire($sessionId);
 
         $responseData = $response->toArray(); 

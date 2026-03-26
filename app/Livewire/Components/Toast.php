@@ -8,9 +8,35 @@ class Toast extends Component
 {
     public $messages = [];
     public $showToast = true;
+<<<<<<< Updated upstream
     
     protected $listeners = ['notify' => 'addMessage'];
 
+=======
+    public int $authId;
+
+    public function mount()
+    {
+        $this->authId = auth()->id() ?? 0;
+    }
+    public function getListeners()
+    {
+        return [
+            'notify' => 'addMessage',
+            "echo-private:App.Models.User.{$this->authId},CommentLikedEvent" => 'handleCommentLiked',
+        ];
+    }
+    public function handleCommentLiked($payload)
+    {
+        logger('🔥 Comment Liked Payload', $payload);
+
+        $this->addMessage([
+            'message' => "{$payload['liker_name']} liked your comment",
+            'type' => 'success',
+            'duration' => 4000,
+        ]);
+    }
+>>>>>>> Stashed changes
     public function addMessage($data)
     {
         $this->messages[] = [
@@ -19,7 +45,7 @@ class Toast extends Component
             'type' => $data['type'] ?? 'success',
             'duration' => $data['duration'] ?? 3000
         ];
-        
+
         $this->showToast = true;
     }
 
@@ -28,7 +54,7 @@ class Toast extends Component
         $this->messages = array_filter($this->messages, function($message) use ($messageId) {
             return $message['id'] !== $messageId;
         });
-        
+
         if (empty($this->messages)) {
             $this->showToast = false;
         }
